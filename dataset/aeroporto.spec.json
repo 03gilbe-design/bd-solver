@@ -1,0 +1,26 @@
+{
+  "_fonte": "Belussi 1-17_A (aeroporto Verona) - soluzione ufficiale nel PDF",
+  "entita": {
+    "AEROPORTO":  {"attr": ["sigla","nome","citta","stato"], "id": [["sigla"]]},
+    "AEROMOBILE": {"attr": ["codice","modello","costruttore","capienza"], "id": [["codice"]]},
+    "VOLO":       {"attr": ["codice_int","data","ora","durata","ritardo"], "opt": ["ritardo"], "id": [["codice_int","data"]]},
+    "DIPENDENTE": {"attr": ["matricola","nome","cognome","data_nascita"], "id": [["matricola"]]},
+    "PILOTA":     {"attr": ["anno_brevetto"], "id": [["matricola"]]},
+    "ASSISTENTE_VOLO": {"attr": ["anni_volo"], "id": [["matricola"]]},
+    "PASSEGGERO": {"attr": ["biglietto","nome","cognome","data_nascita","luogo_nascita","nazione","passaporto","data_imbarco","ora_imbarco"],
+                   "opt": ["data_imbarco","ora_imbarco"], "id": [["biglietto"]]},
+    "CHECK_IN":   {"attr": ["carta_imb","tipo","posto","gate","data","ora"], "id": [["carta_imb"]]},
+    "BAGAGLIO":   {"attr": ["codice_bag","peso"], "id": [["codice_bag"]]}
+  },
+  "relazioni": {
+    "DESTINAZIONE": {"tra": ["VOLO","AEROPORTO"], "card": {"VOLO":[1,1], "AEROPORTO":[0,"N"]}, "attr": []},
+    "ESEGUITO_DA":  {"tra": ["VOLO","AEROMOBILE"], "card": {"VOLO":[0,1], "AEROMOBILE":[0,"N"]}, "attr": []},
+    "PRENOTA":      {"tra": ["PASSEGGERO","VOLO"], "card": {"PASSEGGERO":[1,1], "VOLO":[0,"N"]}, "attr": []},
+    "FA_CHECKIN":   {"tra": ["CHECK_IN","PASSEGGERO"], "card": {"CHECK_IN":[1,1], "PASSEGGERO":[0,1]}, "attr": []},
+    "CONSEGNA":     {"tra": ["BAGAGLIO","PASSEGGERO"], "card": {"BAGAGLIO":[1,1], "PASSEGGERO":[0,"N"]}, "attr": []}
+  },
+  "_NOTA_GAP": "EQUIPAGGIO/ASSISTENZA NON modellati: richiedono relazioni con RUOLI (capitano e vice sono entrambi PILOTA, stesso target entita' due volte) - er.py non le supporta ancora (collisione nome colonna FK). Vedi GAPS.md.",
+  "isa": [
+    {"padre":"DIPENDENTE","figli":["PILOTA","ASSISTENTE_VOLO"],"strategia":"figli"}
+  ]
+}

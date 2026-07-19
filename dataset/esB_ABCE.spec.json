@@ -1,0 +1,13 @@
+{
+  "_fonte": "esercizio (b) preliminare - schema concettuale dato A/B/C/E con relazioni R,Q - foto 17-46-11/19",
+  "entita": {
+    "A": {"attr": ["a1","a2","a3"], "id": [["a1"]]},
+    "B": {"attr": ["b1","b2","b3"], "id": [["b1"]]},
+    "C": {"attr": ["c1","c2"], "id": [["c1"]]},
+    "E": {"attr": ["e1","e2"], "id": [["e1"]]}
+  },
+  "relazioni": {
+    "R": {"tra": ["A","B"], "card": {"A":[0,"N"], "B":[0,"N"]}, "attr": ["k1"]},
+    "Q": {"tra": ["C","E"], "card": {"C":[1,1], "E":[0,1]}, "attr": []}
+  }
+}

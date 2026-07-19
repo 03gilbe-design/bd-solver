@@ -1,0 +1,17 @@
+{
+  "titolo": "Basi di Dati — III Prova in itinere del 08 giugno 2023 (B)",
+  "sottotitolo": "Esercizi e) f) g), soluzioni dai motori deterministici pt2_* (esame del test set, nessuna soluzione ufficiale consultata)",
+  "esercizi": [
+    {"tipo": "schedule", "id": "e", "titolo": "Esecuzione concorrente", "punti": 6,
+     "schedule": "r1(x), w3(z), r1(y), w2(z), w1(y), r3(y), w3(x), w3(t), w2(t), r2(y), r0(t), r2(x)"},
+    {"tipo": "costo", "id": "f", "titolo": "Ottimizzazione (costo query)", "punti": 5,
+     "descrizione": "Ordine join: MEDICO $\\bowtie$ VISITA (Nested Loop Join, 1 pagina di buffer per tabella). Selezione su MEDICO tenuta in buffer; VISITA senza filtro.",
+     "parametri": {"np_outer": 12, "nr_outer": 1200, "val_sel_outer": 12,
+                   "np_inner": 3100, "pagine_sel_inner": 3100,
+                   "nr_sel_inner": 380000, "val_join_inner": 1900, "prof_indice": 2,
+                   "interna_selezionata": false}},
+    {"tipo": "btree", "id": "g", "titolo": "B$^+$-tree (fan-out 5)", "punti": 6,
+     "fanout": 5, "foglie": [["A","B"], ["H","I"], ["L","M","N","O"], ["P","Q","R","T"], ["U","W","Z"]],
+     "operazioni": [{"op": "insert", "key": "S"}, {"op": "delete", "key": "I"}]}
+  ]
+}

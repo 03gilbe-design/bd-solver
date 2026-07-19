@@ -1,0 +1,14 @@
+# materiale del prof (copyright) e sessioni locali
+corpus_esami/
+termux_session_16lug/
+# output generati (rigenerabili dagli spec)
+out/
+out_*/
+dataset_pt2/out_*/
+# artefatti LaTeX
+*.aux
+*.log
+*.synctex.gz
+*.out
+*.png
+*.pdf

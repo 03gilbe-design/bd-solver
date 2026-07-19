@@ -1,0 +1,9 @@
+{
+  "titolo": "CONFRONTO VISIVO — esercizio ufficiale 20_esR_b+tree.pdf",
+  "sottotitolo": "Stesso esercizio risolto dal prof nelle slide: output del motore da confrontare fianco a fianco col disegno ufficiale (fan-out 5, foglie ABCD/FGMN/OP/ST/WZ, insert H, delete Z)",
+  "esercizi": [
+    {"tipo": "btree", "id": "1", "titolo": "B$^+$-tree (fan-out 5) — esercizio 20 esR ufficiale", "punti": 0,
+     "fanout": 5, "foglie": [["A","B","C","D"], ["F","G","M","N"], ["O","P"], ["S","T"], ["W","Z"]],
+     "operazioni": [{"op": "insert", "key": "H"}, {"op": "delete", "key": "Z"}]}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "titolo": "Basi di Dati — Recupero III Prova in itinere del 23 giugno 2025",
+  "sottotitolo": "Esercizi d) e) f) g), soluzioni dai motori deterministici pt2_*",
+  "esercizi": [
+    {"tipo": "ripresa", "id": "d", "titolo": "Gestore dell'affidabilità (ripresa a caldo)", "punti": 4,
+     "log": "B(T1), B(T2), U(T1,O1,B1,A1), I(T2,O2,A2), B(T3), B(T4), U(T4,O2,B3,A3), U(T3,O1,B4,A4), A(T1), CK(T2,T3,T4), C(T4), B(T5), U(T3,O3,B5,A5), U(T5,O4,B6,A6), D(T2,O5,B7), C(T2), A(T5), I(T3,O6,A8)"},
+    {"tipo": "schedule", "id": "e", "titolo": "Esecuzione concorrente", "punti": 6,
+     "schedule": "r2(y), w3(z), r2(x), w1(z), w2(y), w3(t), r3(y), w3(x), r1(x), r1(y), w0(x), w1(t)"},
+    {"tipo": "costo", "id": "f", "titolo": "Ottimizzazione (costo query)", "punti": 5,
+     "descrizione": "Ordine join: STUDENTE $\\bowtie$ ESAME (Nested Loop Join, 1 pagina di buffer per tabella).",
+     "parametri": {"np_outer": 250, "nr_outer": 15500, "val_sel_outer": 10,
+                   "np_inner": 2500, "pagine_sel_inner": 1750,
+                   "nr_sel_inner": 201500, "val_join_inner": 15500, "prof_indice": 3}},
+    {"tipo": "btree", "id": "g", "titolo": "B$^+$-tree (fan-out 5)", "punti": 3,
+     "fanout": 5, "foglie": [["A","D","F","G"], ["L","M","N"], ["Q","R"], ["S","U"], ["V","Z"]],
+     "operazioni": [{"op": "insert", "key": "B"}, {"op": "delete", "key": "Z"}]}
+  ]
+}

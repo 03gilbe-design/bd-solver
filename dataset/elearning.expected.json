@@ -1,0 +1,16 @@
+{
+  "_nota": "confronto vs soluzione ufficiale 2-14_A. 11/11 tabelle prof modellate. Derivato SOLO dal testo (TRICKS.md), NON copiato dalla soluzione - 1 errore trovato e corretto in corsa (mancava FK EROGAZIONE->CORSO), poi struttura identica.",
+  "tabelle": {
+    "CORSO":               {"pk": ["nome"], "nullable": [], "fk_verso": []},
+    "EROGAZIONE":           {"pk": ["codice"], "nullable": ["posti_disponibili"], "fk_verso": ["CORSO"]},
+    "TIPO_EVENTO":          {"pk": ["nome"], "nullable": [], "fk_verso": []},
+    "EVENTO":               {"pk": ["erogazione_codice","data","ora"], "nullable": [], "fk_verso": ["EROGAZIONE","TIPO_EVENTO","DOCENTE"]},
+    "DOCENTE":              {"pk": ["cf"], "nullable": ["telefono"], "fk_verso": []},
+    "MATERIALE_DIDATTICO":  {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "STUDENTE":             {"pk": ["cod_studente"], "nullable": [], "fk_verso": []},
+    "ALLEGATO":             {"pk": ["evento_data","evento_ora","evento_erogazione_codice","materiale_didattico_codice"], "nullable": [], "fk_verso": ["EVENTO","MATERIALE_DIDATTICO"]},
+    "ISCRIZIONE":           {"pk": ["studente_cod_studente","erogazione_codice"], "nullable": [], "fk_verso": ["STUDENTE","EROGAZIONE"]},
+    "PARTECIPAZIONE":       {"pk": ["studente_cod_studente","evento_data","evento_ora","evento_erogazione_codice"], "nullable": [], "fk_verso": ["STUDENTE","EVENTO"]},
+    "DIPLOMA":              {"pk": ["studente_cod_studente","erogazione_codice"], "nullable": [], "fk_verso": ["STUDENTE","EROGAZIONE"]}
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_fonte": "Belussi 12-22_B (catena ristoranti) - gemello di 12-22_A, soluzione ufficiale testuale nel PDF",
+  "_skip": "LISTINO saltato: ternaria fra due entita' DEBOLI dello stesso owner (PERIODO e TAVOLO entrambi di RISTORANTE) -> le FK condividerebbero la colonna Ristorante, pattern non supportato (variante del gap ruoli/FK sovrapposte). CLIENTE modellato come attributo di PRENOTAZIONE (la soluzione prof non mostra tabella CLIENTE).",
+  "entita": {
+    "RISTORANTE": {"attr": ["codice","nome","citta"], "id": [["codice"]]},
+    "PERIODO": {"attr": ["nome_periodo","data_inizio","data_fine"], "id": [["nome_periodo","DI_RISTORANTE_P"]]},
+    "TAVOLO": {"attr": ["numero","piano","num_posti","descr"], "id": [["numero","DI_RISTORANTE_T"]]},
+    "PRENOTAZIONE": {"attr": ["codice","cliente","data","ora","data_prenotazione"], "id": [["codice"]]},
+    "DIPENDENTE": {"attr": ["codice","nome","cognome","comune_res","data_nas"], "id": [["codice"]]},
+    "IMPIEGATO": {"attr": []},
+    "ADDETTO_SALA": {"attr": []},
+    "ADDETTO_PRENOTAZIONI": {"attr": []},
+    "CUOCO": {"attr": ["data_diploma"]},
+    "CAPO": {"attr": []},
+    "INCASSO": {"attr": ["settimana","anno","importo"], "id": [["settimana","anno","DI_RISTORANTE_I"]]}
+  },
+  "relazioni": {
+    "DI_RISTORANTE_P": {"tra": ["PERIODO","RISTORANTE"], "card": {"PERIODO":[1,1], "RISTORANTE":[0,"N"]}, "attr": []},
+    "DI_RISTORANTE_T": {"tra": ["TAVOLO","RISTORANTE"], "card": {"TAVOLO":[1,1], "RISTORANTE":[0,"N"]}, "attr": []},
+    "SU_TAVOLO": {"tra": ["PRENOTAZIONE","TAVOLO"], "card": {"PRENOTAZIONE":[1,1], "TAVOLO":[0,"N"]}, "attr": []},
+    "HA_CAPO": {"tra": ["IMPIEGATO","CAPO"], "card": {"IMPIEGATO":[0,1], "CAPO":[0,"N"]}, "attr": []},
+    "INCARICO": {"tra": ["DIPENDENTE","RISTORANTE"], "card": {"DIPENDENTE":[0,"N"], "RISTORANTE":[0,"N"]}, "attr": ["data_inizio","data_fine"], "opt_attr": ["data_fine"]},
+    "DI_RISTORANTE_I": {"tra": ["INCASSO","RISTORANTE"], "card": {"INCASSO":[1,1], "RISTORANTE":[0,"N"]}, "attr": []}
+  },
+  "isa": [
+    {"padre":"DIPENDENTE","figli":["IMPIEGATO","ADDETTO_SALA","ADDETTO_PRENOTAZIONI","CUOCO","CAPO"],"strategia":"figli"}
+  ]
+}

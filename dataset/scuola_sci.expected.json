@@ -1,0 +1,14 @@
+{
+  "_nota": "confronto vs soluzione ufficiale 1-18_A. 7/10 entita' del prof modellate (CORSO_IND, STAFF, DIRIGENTE, IMPIEGATO saltati - vedi _skip nello spec). Sulle 7 modellate: PK/nullable identici al testo prof, fk_verso per nome entita' (non nome colonna esatto, vedi GAPS.md #4).",
+  "tabelle": {
+    "TIPO":            {"pk": ["nome"], "nullable": [], "fk_verso": []},
+    "CORSO_GRUPPI":     {"pk": ["codice"], "nullable": [], "fk_verso": ["TIPO"]},
+    "GRUPPO":           {"pk": ["corso_gruppi_codice","lettera"], "nullable": [], "fk_verso": ["CORSO_GRUPPI"]},
+    "UTENTE":           {"pk": ["codice_fis"], "nullable": ["email","livello"], "fk_verso": []},
+    "MAESTRO_SCI":      {"pk": ["matricola"], "nullable": [], "fk_verso": []},
+    "RESOCONTO":        {"pk": ["maestro_sci_dipendente_matricola","mese","anno"], "nullable": [], "fk_verso": ["MAESTRO_SCI"]},
+    "ISCRIZIONE":       {"pk": ["utente_codice_fis","corso_gruppi_codice"], "nullable": ["giudizio"], "fk_verso": ["UTENTE","CORSO_GRUPPI"]},
+    "ASSEGNAZIONE":     {"pk": ["utente_codice_fis","gruppo_lettera","gruppo_corso_gruppi_codice"], "nullable": [], "fk_verso": ["UTENTE","GRUPPO"]},
+    "ATTIVITA_GRUPPI":  {"pk": ["maestro_sci_dipendente_matricola","gruppo_lettera","gruppo_corso_gruppi_codice"], "nullable": [], "fk_verso": ["MAESTRO_SCI","GRUPPO"]}
+  }
+}

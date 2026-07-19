@@ -1,0 +1,41 @@
+{
+  "_scopo": "Showcase progressivo: 2 entita, poi 3 (catena vs ternaria), poi 4+ (vari). Ogni cluster e' indipendente (nessun collegamento fra gruppi) cosi' il layout li mette uno accanto all'altro.",
+  "entita": {
+    "A2_UNO": {"attr": ["id","nome"], "id": [["id"]]},
+    "A2_DUE": {"attr": ["id","valore"], "id": [["id"]]},
+
+    "B3C_UNO":  {"attr": ["id"], "id": [["id"]]},
+    "B3C_DUE":  {"attr": ["id"], "id": [["id"]]},
+    "B3C_TRE":  {"attr": ["id"], "id": [["id"]]},
+
+    "B3T_UNO":  {"attr": ["id"], "id": [["id"]]},
+    "B3T_DUE":  {"attr": ["id"], "id": [["id"]]},
+    "B3T_TRE":  {"attr": ["id"], "id": [["id"]]},
+
+    "C4_UNO":  {"attr": ["id"], "id": [["id"]]},
+    "C4_DUE":  {"attr": ["id"], "id": [["id"]]},
+    "C4_TRE":  {"attr": ["id"], "id": [["id"]]},
+    "C4_QUATTRO": {"attr": ["id"], "id": [["id"]]},
+
+    "D5_UNO":  {"attr": ["id"], "id": [["id"]]},
+    "D5_DUE":  {"attr": ["id"], "id": [["id"]]},
+    "D5_TRE":  {"attr": ["id"], "id": [["id"]]},
+    "D5_QUATTRO": {"attr": ["id"], "id": [["id"]]},
+    "D5_CINQUE": {"attr": ["id"], "id": [["id"]]}
+  },
+  "relazioni": {
+    "R_A2": {"tra": ["A2_UNO","A2_DUE"], "card": {"A2_UNO":[0,"N"], "A2_DUE":[0,"N"]}, "attr": []},
+
+    "R_B3C_1": {"tra": ["B3C_UNO","B3C_DUE"], "card": {"B3C_UNO":[0,"N"], "B3C_DUE":[1,1]}, "attr": []},
+    "R_B3C_2": {"tra": ["B3C_DUE","B3C_TRE"], "card": {"B3C_DUE":[0,"N"], "B3C_TRE":[1,1]}, "attr": []},
+
+    "R_B3T": {"tra": ["B3T_UNO","B3T_DUE","B3T_TRE"], "card": {"B3T_UNO":[0,"N"], "B3T_DUE":[0,"N"], "B3T_TRE":[0,"N"]}, "attr": []},
+
+    "R_C4_1": {"tra": ["C4_UNO","C4_DUE"], "card": {"C4_UNO":[0,"N"], "C4_DUE":[0,"N"]}, "attr": []},
+    "R_C4_2": {"tra": ["C4_DUE","C4_TRE","C4_QUATTRO"], "card": {"C4_DUE":[0,"N"], "C4_TRE":[0,"N"], "C4_QUATTRO":[0,"N"]}, "attr": []},
+
+    "R_D5_1": {"tra": ["D5_UNO","D5_DUE"], "card": {"D5_UNO":[1,1], "D5_DUE":[0,"N"]}, "attr": []},
+    "R_D5_2": {"tra": ["D5_DUE","D5_TRE"], "card": {"D5_DUE":[1,1], "D5_TRE":[0,"N"]}, "attr": []},
+    "R_D5_3": {"tra": ["D5_TRE","D5_QUATTRO","D5_CINQUE"], "card": {"D5_TRE":[0,"N"], "D5_QUATTRO":[0,"N"], "D5_CINQUE":[0,"N"]}, "attr": []}
+  }
+}

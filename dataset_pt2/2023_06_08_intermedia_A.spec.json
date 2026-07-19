@@ -1,0 +1,17 @@
+{
+  "titolo": "Basi di Dati — III Prova in itinere del 08 giugno 2023 (A)",
+  "sottotitolo": "Esercizi Esecuzione concorrente / Ottimizzazione / B⁺-tree, soluzioni dai motori deterministici pt2_* (esame mai visto prima, nessuna soluzione ufficiale consultata)",
+  "esercizi": [
+    {"tipo": "schedule", "id": "e", "titolo": "Esecuzione concorrente", "punti": 6,
+     "schedule": "r1(y), w3(z), r1(x), w2(z), w1(y), w3(t), r3(y), w3(x), w0(x), r2(y), w2(t), r2(x)"},
+    {"tipo": "costo", "id": "f", "titolo": "Ottimizzazione (costo query)", "punti": 5,
+     "descrizione": "Ordine join: PAZIENTE $\\bowtie$ VISITA (Nested Loop Join, 1 pagina di buffer per tabella).",
+     "parametri": {"np_outer": 160, "nr_outer": 16000, "val_sel_outer": 160,
+                   "np_inner": 3100, "pagine_sel_inner": 3100,
+                   "nr_sel_inner": 365500, "val_join_inner": 8500, "prof_indice": 2,
+                   "interna_selezionata": false, "outer_pagine_scritte": 10}},
+    {"tipo": "btree", "id": "g", "titolo": "B$^+$-tree (fan-out 5)", "punti": 6,
+     "fanout": 5, "foglie": [["A","B"], ["H","I"], ["L","M","N","P"], ["Q","R"], ["S","T","U","Z"]],
+     "operazioni": [{"op": "insert", "key": "O"}, {"op": "delete", "key": "A"}]}
+  ]
+}

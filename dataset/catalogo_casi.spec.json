@@ -1,0 +1,35 @@
+{
+  "_scopo": "PDF di riferimento: mostra ogni caso che puo' capitare in un esame, tutti insieme",
+  "entita": {
+    "AULA": {"attr": ["edificio","numero","capienza"], "id": [["edificio","numero"]],
+             "_nota": "CHIAVE COMPOSTA: (edificio,numero) - due pallini pieni"},
+    "STUDENTE": {"attr": ["matricola","nome","cognome","email"], "opt": ["email"], "id": [["matricola"]],
+             "_nota": "attributo opzionale (email) - linea tratteggiata"},
+    "CORSO": {"attr": ["codice","titolo","cfu"], "id": [["codice"]]},
+    "DOCENTE": {"attr": ["matricola","nome","ruolo"], "id": [["matricola"]]},
+    "PROFESSORE": {"attr": ["dipartimento"], "id": [["matricola"]],
+             "_nota": "ISA strategia FIGLI: tabella propria + FK al padre DOCENTE"},
+    "RICERCATORE": {"attr": ["progetto"], "id": [["matricola"]]},
+    "ISCRIZIONE": {"attr": [], "id": [["DI_STUDENTE","DI_EDIZIONE"]],
+             "_nota": "ENTITA DEBOLE: id esterno via 2 relazioni (nomi relazione nell'id, non nomi attributo), entrambe devono essere (1,1) sul lato ISCRIZIONE"},
+    "EDIZIONE": {"attr": ["codice_edizione","anno"], "id": [["codice_edizione"]]}
+  },
+  "relazioni": {
+    "SI_TIENE": {"tra": ["EDIZIONE","AULA"], "card": {"EDIZIONE":[0,"N"], "AULA":[0,"N"]}, "attr": ["orario"],
+                 "_nota": "N:N -> genera tabella propria SI_TIENE"},
+    "INSEGNA": {"tra": ["EDIZIONE","DOCENTE"], "card": {"EDIZIONE":[1,1], "DOCENTE":[0,"N"]}, "attr": [],
+                 "_nota": "1:N -> FK sul lato 1 (EDIZIONE)"},
+    "DI_CORSO": {"tra": ["EDIZIONE","CORSO"], "card": {"EDIZIONE":[1,1], "CORSO":[0,"N"]}, "attr": [],
+                 "_nota": "1:N -> FK sul lato 1 (EDIZIONE)"},
+    "DI_EDIZIONE": {"tra": ["ISCRIZIONE","EDIZIONE"], "card": {"ISCRIZIONE":[1,1], "EDIZIONE":[0,"N"]}, "attr": [],
+                 "_nota": "identificazione esterna: ISCRIZIONE prende codice_edizione da qui, (1,1) obbligatorio"},
+    "DI_STUDENTE": {"tra": ["ISCRIZIONE","STUDENTE"], "card": {"ISCRIZIONE":[1,1], "STUDENTE":[0,"N"]}, "attr": ["voto"],
+                 "_nota": "identificazione esterna: ISCRIZIONE prende matricola da qui"},
+    "PRENOTA_AULA_CORSO_EDIZ": {"tra": ["AULA","CORSO","EDIZIONE"],
+                 "card": {"AULA":[0,"N"], "CORSO":[0,"N"], "EDIZIONE":[0,"N"]}, "attr": ["data"],
+                 "_nota": "RELAZIONE TERNARIA (n-aria): rombo con 3 archi, PK = 3 chiavi"}
+  },
+  "isa": [
+    {"padre":"DOCENTE","figli":["PROFESSORE","RICERCATORE"],"strategia":"figli"}
+  ]
+}

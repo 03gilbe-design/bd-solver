@@ -1,0 +1,23 @@
+{
+  "_fonte": "Belussi 2-14_A (e-learning) - derivato SOLO dal testo esercizio applicando TRICKS.md, confrontato con soluzione DOPO (metodologia richiesta: no barare)",
+  "_skip": "DIPLOMA.Relatore modellato come attributo semplice invece di FK a DOCENTE (limite motore: attributi di relazione non supportano riferimenti a entita')",
+  "entita": {
+    "CORSO": {"attr": ["nome","categoria","programma","tot_ore","max_studenti"], "id": [["nome"]]},
+    "EROGAZIONE": {"attr": ["codice","data_inizio","data_fine","stato","posti_disponibili"], "opt": ["posti_disponibili"], "id": [["codice"]]},
+    "TIPO_EVENTO": {"attr": ["nome"], "id": [["nome"]]},
+    "EVENTO": {"attr": ["data","ora"], "id": [["data","ora","DI_EROGAZIONE"]]},
+    "DOCENTE": {"attr": ["cf","cognome","nome","email","telefono"], "opt": ["telefono"], "id": [["cf"]]},
+    "MATERIALE_DIDATTICO": {"attr": ["codice","descrizione","nome_file"], "id": [["codice"]]},
+    "STUDENTE": {"attr": ["cod_studente","cognome","nome","citta_res","email"], "id": [["cod_studente"]]}
+  },
+  "relazioni": {
+    "DI_CORSO":      {"tra": ["EROGAZIONE","CORSO"], "card": {"EROGAZIONE":[1,1], "CORSO":[0,"N"]}, "attr": []},
+    "DI_EROGAZIONE": {"tra": ["EVENTO","EROGAZIONE"], "card": {"EVENTO":[1,1], "EROGAZIONE":[0,"N"]}, "attr": []},
+    "DI_TIPO":       {"tra": ["EVENTO","TIPO_EVENTO"], "card": {"EVENTO":[1,1], "TIPO_EVENTO":[0,"N"]}, "attr": []},
+    "TIENE":         {"tra": ["EVENTO","DOCENTE"], "card": {"EVENTO":[1,1], "DOCENTE":[0,"N"]}, "attr": []},
+    "ALLEGATO":      {"tra": ["EVENTO","MATERIALE_DIDATTICO"], "card": {"EVENTO":[0,"N"], "MATERIALE_DIDATTICO":[0,"N"]}, "attr": []},
+    "ISCRIZIONE":    {"tra": ["STUDENTE","EROGAZIONE"], "card": {"STUDENTE":[0,"N"], "EROGAZIONE":[0,"N"]}, "attr": ["data","ora"]},
+    "PARTECIPAZIONE":{"tra": ["STUDENTE","EVENTO"], "card": {"STUDENTE":[0,"N"], "EVENTO":[0,"N"]}, "attr": ["istante_inizio","istante_fine"]},
+    "DIPLOMA":       {"tra": ["STUDENTE","EROGAZIONE"], "card": {"STUDENTE":[0,"N"], "EROGAZIONE":[0,"N"]}, "attr": ["relatore"]}
+  }
+}

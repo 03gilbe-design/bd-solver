@@ -1,0 +1,48 @@
+{
+  "titolo": "Basi di Dati — III Prova in itinere del 12 giugno 2025",
+  "sottotitolo": "ESAME COMPLETO: teoria a) b) c) + esercizi d) e) f) g). Esercizi risolti dai motori deterministici pt2_*; teoria scritta sulle slide del corso.",
+  "esercizi": [
+    {"tipo": "teoria", "id": "a", "titolo": "Proprietà delle transazioni", "punti": 4,
+     "domanda": "Illustrare le proprietà delle transazioni; si indichi quali moduli di un DBMS garantiscono ciascuna di tali proprietà.",
+     "risposta": [
+       "Una transazione è un'unità di lavoro indivisibile che interagisce con la base di dati: o va a buon fine (commit) e ha effetto, o abortisce (rollback) e non lascia alcun effetto — o tutto o niente. Le quattro proprietà (ACID) sono:",
+       "- ATOMICITÀ (Atomicity): la transazione è un'unità di esecuzione indivisibile. Se viene interrotta prima del commit, il lavoro svolto va disfatto ripristinando lo stato precedente; se interrotta dopo il commit, il sistema deve comunque garantirne gli effetti.",
+       "- CONSISTENZA (Consistency): l'esecuzione non deve violare i vincoli di integrità della base di dati. La verifica può essere immediata (durante la transazione, abortisce solo l'operazione violante) o differita (al commit, abortisce l'intera transazione).",
+       "- ISOLAMENTO (Isolation): l'esecuzione deve essere indipendente dalle altre transazioni concorrenti; in particolare il rollback di una transazione non deve causare rollback a catena delle altre.",
+       "- PERSISTENZA (Durability): l'effetto di una transazione che ha eseguito il commit non deve mai andare perso, neppure in caso di guasto.",
+       "Moduli del DBMS che le garantiscono:",
+       "- Gestore dei metodi d'accesso: Consistenza.",
+       "- Gestore dell'esecuzione concorrente: Atomicità e Isolamento.",
+       "- Gestore dell'affidabilità: Atomicità e Persistenza."
+     ]},
+    {"tipo": "teoria", "id": "b", "titolo": "Indice primario", "punti": 4,
+     "domanda": "Illustrare la struttura di accesso ai dati denominata indice primario: (i) caratteristiche e tipologie possibili, (ii) algoritmo di ricerca di una tupla con chiave K, (iii) differenza rispetto a un indice secondario.",
+     "risposta": [
+       "(i) Un indice primario è costruito sull'attributo secondo cui il file dati è FISICAMENTE ORDINATO (tipicamente la chiave). Ogni voce dell'indice è una coppia (valore chiave, puntatore); il puntatore indirizza la prima tupla con quel valore. Poiché i dati sono ordinati, l'indice può essere DENSO (una voce per ogni valore di chiave) oppure SPARSO (una voce per blocco/pagina, col solo valore minimo del blocco): la versione sparsa è più compatta. L'indice può essere realizzato come file sequenziale ordinato, come B+-tree o come struttura hash.",
+       "(ii) Ricerca di K: si cerca nell'indice il valore K (o, se sparso, il più grande valore minore o uguale a K), tipicamente con ricerca binaria o discesa del B+-tree; si segue il puntatore alla pagina dati corrispondente; si scandisce la pagina fino alla tupla con chiave K. Essendo i dati ordinati, le tuple con lo stesso valore (o in un range) sono contigue: basta proseguire in avanti nella scansione.",
+       "(iii) Differenza con l'indice secondario: il secondario è costruito su un attributo secondo cui il file NON è ordinato fisicamente. Deve quindi essere per forza DENSO e per ogni valore di chiave punta a un bucket di puntatori (uno per ciascuna tupla con quel valore, che possono trovarsi in pagine sparse). Ne esiste al più uno primario per tabella, mentre di secondari se ne possono definire molti; l'accesso via secondario a molte tuple costa di più perché ogni puntatore può portare a una pagina diversa."
+     ]},
+    {"tipo": "teoria", "id": "c", "titolo": "Sharding in MongoDB", "punti": 5,
+     "domanda": "Illustrare il concetto di sharding in MongoDB.",
+     "risposta": [
+       "Lo sharding è la tecnica di SCALABILITÀ ORIZZONTALE di MongoDB: una collezione troppo grande (o troppo acceduta) per un singolo server viene PARTIZIONATA in sottoinsiemi disgiunti di documenti, detti shard, distribuiti su server diversi. Serve quando i dati o il carico superano le capacità di una singola macchina: invece di potenziare il server (scalabilità verticale) si aggiungono nodi.",
+       "Il partizionamento avviene tramite una SHARD KEY, un campo (o combinazione di campi) presente in ogni documento della collezione: lo spazio dei valori della shard key viene diviso in intervalli (range-based sharding) oppure tramite funzione hash (hashed sharding), e ogni intervallo (chunk) è assegnato a uno shard. Il bilanciatore sposta chunk tra gli shard per mantenere la distribuzione uniforme.",
+       "Componenti dell'architettura:",
+       "- SHARD: i server (tipicamente replica set, per garantire anche ridondanza) che contengono ciascuno una porzione dei dati.",
+       "- MONGOS (router): il processo a cui si connettono le applicazioni; instrada ogni interrogazione agli shard rilevanti in base alla shard key (se la query la contiene, va a un solo shard; altrimenti fa scatter/gather su tutti) e ne aggrega i risultati.",
+       "- CONFIG SERVER: mantengono i metadati del cluster, ossia la mappa chunk-shard usata dai mongos per l'instradamento."
+     ]},
+    {"tipo": "ripresa", "id": "d", "titolo": "Gestore dell'affidabilità (ripresa a caldo)", "punti": 4,
+     "log": "B(T1), B(T2), B(T3), D(T1,O1,B1), I(T2,O2,A2), U(T3,O3,B3,A3), U(T3,O4,B4,A4), CK(T1,T2,T3), B(T4), B(T5), B(T6), U(T4,O5,B5,A5), A(T6), C(T1), C(T3), U(T2,O6,B6,A6), U(T4,O7,B7,A7), C(T2)"},
+    {"tipo": "schedule", "id": "e", "titolo": "Esecuzione concorrente", "punti": 6,
+     "schedule": "r1(t), w2(z), r1(x), r3(z), r1(y), w2(t), r3(y), w3(x), w2(y), r3(t), r2(x)"},
+    {"tipo": "costo", "id": "f", "titolo": "Ottimizzazione (costo query)", "punti": 5,
+     "descrizione": "Ordine join: COLLEGIO $\\bowtie$ VOTO (Nested Loop Join, 1 pagina di buffer per tabella).",
+     "parametri": {"np_outer": 150, "nr_outer": 1500, "val_sel_outer": 20,
+                   "np_inner": 750, "pagine_sel_inner": 150,
+                   "nr_sel_inner": 52500, "val_join_inner": 1500, "prof_indice": 2}},
+    {"tipo": "btree", "id": "g", "titolo": "B$^+$-tree (fan-out 5)", "punti": 5,
+     "fanout": 5, "foglie": [[1,3,5,9], [14,18,19,22], [23,25,26], [27,28], [29,30]],
+     "operazioni": [{"op": "insert", "key": 7}, {"op": "delete", "key": 27}]}
+  ]
+}

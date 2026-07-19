@@ -1,0 +1,15 @@
+{
+  "_nota": "Proprieta strutturali attese (NON i nomi esatti del prof). Verifica non overfittata.",
+  "tabelle": {
+    "AEROPORTO":       {"pk": ["sigla"], "nullable": [], "fk_verso": []},
+    "AEROMOBILE":      {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "VOLO":            {"pk": ["codice_int","data"], "nullable": ["ritardo","aeromobile_codice"], "fk_verso": ["AEROPORTO","AEROMOBILE"]},
+    "DIPENDENTE":      {"pk": ["matricola"], "nullable": [], "fk_verso": []},
+    "PILOTA":          {"pk": ["dipendente_matricola"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "ASSISTENTE_VOLO": {"pk": ["dipendente_matricola"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "PASSEGGERO": {"pk": ["biglietto"], "nullable": ["data_imbarco","ora_imbarco"], "fk_verso": ["VOLO"]},
+    "CHECK_IN":   {"pk": ["carta_imb"], "nullable": [], "fk_verso": ["PASSEGGERO"]},
+    "BAGAGLIO":   {"pk": ["codice_bag"], "nullable": [], "fk_verso": ["PASSEGGERO"]}
+  },
+  "_confronto_soluzione_prof": "9/11 tabelle del prof coperte (manca EQUIPAGGIO, ASSISTENZA: relazioni con ruoli, gap noto in GAPS.md). Sulle 9 coperte: stessa struttura chiavi/nullable/FK del testo ufficiale."
+}

@@ -1,0 +1,17 @@
+{
+  "titolo": "Basi di Dati — III Prova in itinere del 21 aprile 2022 (A)",
+  "sottotitolo": "Esercizi Esecuzione concorrente / Ottimizzazione / B$^+$-tree, soluzioni dai motori deterministici pt2_* (esame reale letto da PDF)",
+  "esercizi": [
+    {"tipo": "schedule", "id": "1", "titolo": "Esecuzione concorrente", "punti": 6,
+     "schedule": "r2(y), w3(z), r2(x), w1(z), w2(y), w1(t), r3(y), w3(x), r1(x), r1(y), w0(x), w3(t)"},
+    {"tipo": "costo", "id": "2", "titolo": "Ottimizzazione (costo query)", "punti": 6,
+     "descrizione": "Ordine join: PAZIENTE $\\bowtie$ VISITA (Nested Loop Join, 1 pagina di buffer per tabella). VISITA non ha filtro WHERE: nessuna selezione da materializzare, il JOIN usa NP(VISITA) pieno (formula base dalla slide del corso '10 - Ottimizzazione di interrogazioni - Parte II', Nested-Loop JOIN: costo).",
+     "parametri": {"np_outer": 140, "nr_outer": 13500, "val_sel_outer": 15,
+                   "np_inner": 2100, "pagine_sel_inner": 2100,
+                   "nr_sel_inner": 270000, "val_join_inner": 13500, "prof_indice": 3,
+                   "interna_selezionata": false}},
+    {"tipo": "btree", "id": "3", "titolo": "B$^+$-tree (fan-out 5)", "punti": 7,
+     "fanout": 5, "foglie": [["A","D","E","G"], ["H","I"], ["L","M","O"], ["P","R"], ["S","T","U","Z"]],
+     "operazioni": [{"op": "insert", "key": "B"}, {"op": "insert", "key": "W"}]}
+  ]
+}

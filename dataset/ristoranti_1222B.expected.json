@@ -1,0 +1,17 @@
+{
+  "_nota": "vs soluzione ufficiale 12-22_B. 12/13 tabelle prof (LISTINO skippato, vedi _skip nello spec). PERIODO/TAVOLO/INCASSO deboli con chiave importata = prof; IMPIEGATO.Capo* nullable = prof.",
+  "tabelle": {
+    "RISTORANTE":           {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "PERIODO":               {"pk": ["ristorante_codice","nome_periodo"], "nullable": [], "fk_verso": ["RISTORANTE"]},
+    "TAVOLO":                {"pk": ["ristorante_codice","numero"], "nullable": [], "fk_verso": ["RISTORANTE"]},
+    "PRENOTAZIONE":          {"pk": ["codice"], "nullable": [], "fk_verso": ["TAVOLO"]},
+    "DIPENDENTE":            {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "IMPIEGATO":             {"pk": ["dipendente_codice"], "nullable": ["capo_dipendente_codice"], "fk_verso": ["CAPO","DIPENDENTE"]},
+    "ADDETTO_SALA":          {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "ADDETTO_PRENOTAZIONI":  {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "CUOCO":                 {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "CAPO":                  {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "INCASSO":               {"pk": ["ristorante_codice","settimana","anno"], "nullable": [], "fk_verso": ["RISTORANTE"]},
+    "INCARICO":              {"pk": ["dipendente_codice","ristorante_codice"], "nullable": ["data_fine"], "fk_verso": ["DIPENDENTE","RISTORANTE"]}
+  }
+}

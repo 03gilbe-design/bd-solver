@@ -1,0 +1,15 @@
+{
+  "_nota": "confronto vs soluzione ufficiale 12-22_A. 10 entita' modellate (ALBERGO/STANZA/PREZZO/SERVIZIO_AGGIUNTIVO/PRENOTAZIONE saltati, vedi _skip nello spec). Pattern nuovo testato: IMPIEGATO.Capo* self-staff verso CAPO (entita' diverse, non ruolo doppio) - matcha esattamente il prof.",
+  "tabelle": {
+    "ALBERGO":               {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "DIPENDENTE":             {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "IMPIEGATO":              {"pk": ["dipendente_codice"], "nullable": ["capo_dipendente_codice"], "fk_verso": ["CAPO","DIPENDENTE"]},
+    "ADDETTO_CAMERE":         {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "ADDETTO_SALA":           {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "ADDETTO_PRENOTAZIONI":   {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "CUOCO":                  {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "CAPO":                   {"pk": ["dipendente_codice"], "nullable": [], "fk_verso": ["DIPENDENTE"]},
+    "INCARICO":               {"pk": ["dipendente_codice","albergo_codice","data_inizio"], "nullable": ["data_fine"], "fk_verso": ["ALBERGO","DIPENDENTE"]},
+    "INCASSO":                {"pk": ["albergo_codice","mese","anno"], "nullable": [], "fk_verso": ["ALBERGO"]}
+  }
+}

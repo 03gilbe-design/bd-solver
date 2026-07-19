@@ -1,0 +1,31 @@
+{
+  "_fonte": "Esame reale fotografato dall'utente 2026-07-16 17:46 (Basi di Dati Prova di Teoria 16 luglio) - derivato dal testo (foto 17-46-08/11/16/19/21/25), MAI visto soluzione",
+  "_skip": "autori trattato come attributo multivalore semplice (testo non da' identificatore per un'entita' AUTORE)",
+  "_gap_motore": "er.py non supporta cardinalita' numeriche arbitrarie (solo 0/1 min, 1/N max) - APPARTIENE dovrebbe essere CATEGORIA_GENERALE:(2,N) [testo: 'per ogni categoria generale esistono almeno due sottocategorie'] semplificato a (0,N); CLASSIFICAZIONE dovrebbe essere LIBRO:(1,2) [testo: 'una o al massimo due sottocategorie'] semplificato a (1,N). Vincoli numerici esatti vanno scritti a mano nella soluzione finale, il motore da' solo la struttura.",
+  "entita": {
+    "BIBLIOTECA": {"attr": ["codice","nome","capienza_massima"], "id": [["codice"]]},
+    "BIBLIOTECA_CENTRALE": {"attr": ["responsabile"]},
+    "BIBLIOTECA_SPECIALISTICA": {"attr": []},
+    "DIPARTIMENTO": {"attr": ["codice","nome","indirizzo"], "id": [["codice"]]},
+    "LIBRO": {"attr": ["isbn","titolo","casa_editrice","anno_edizione","collana"], "opt": ["collana"], "multi": ["autori"], "id": [["isbn"]]},
+    "UTENTE": {"attr": ["cf","nome","cognome","telefono","via","civico","citta"], "id": [["cf"]]},
+    "COPIA": {"attr": ["codice_copia"], "id": [["codice_copia"]]},
+    "PRESTITO": {"attr": ["data_inizio","data_scadenza"], "id": [["data_inizio","DI_COPIA"]]},
+    "CATEGORIA_GENERALE": {"attr": ["codice","descrizione"], "id": [["codice"]]},
+    "SOTTOCATEGORIA": {"attr": ["codice","descrizione"], "id": [["codice"]]},
+    "STORICO_PRESTITI": {"attr": ["anno","numero_prestiti"], "id": [["anno","DI_LIBRO"]]}
+  },
+  "relazioni": {
+    "DI_DIPARTIMENTO": {"tra": ["BIBLIOTECA_SPECIALISTICA","DIPARTIMENTO"], "card": {"BIBLIOTECA_SPECIALISTICA":[1,1], "DIPARTIMENTO":[0,"N"]}, "attr": []},
+    "SI_TROVA": {"tra": ["COPIA","BIBLIOTECA"], "card": {"COPIA":[1,1], "BIBLIOTECA":[0,"N"]}, "attr": []},
+    "DI_LIBRO_COPIA": {"tra": ["COPIA","LIBRO"], "card": {"COPIA":[1,1], "LIBRO":[0,"N"]}, "attr": []},
+    "DI_COPIA": {"tra": ["PRESTITO","COPIA"], "card": {"PRESTITO":[1,1], "COPIA":[0,"N"]}, "attr": []},
+    "DI_UTENTE": {"tra": ["PRESTITO","UTENTE"], "card": {"PRESTITO":[1,1], "UTENTE":[0,"N"]}, "attr": []},
+    "APPARTIENE": {"tra": ["SOTTOCATEGORIA","CATEGORIA_GENERALE"], "card": {"SOTTOCATEGORIA":[1,1], "CATEGORIA_GENERALE":[2,"N"]}, "attr": []},
+    "CLASSIFICAZIONE": {"tra": ["LIBRO","SOTTOCATEGORIA"], "card": {"LIBRO":[1,2], "SOTTOCATEGORIA":[0,"N"]}, "attr": []},
+    "DI_LIBRO": {"tra": ["STORICO_PRESTITI","LIBRO"], "card": {"STORICO_PRESTITI":[1,1], "LIBRO":[0,"N"]}, "attr": []}
+  },
+  "isa": [
+    {"padre":"BIBLIOTECA","figli":["BIBLIOTECA_CENTRALE","BIBLIOTECA_SPECIALISTICA"],"strategia":"figli"}
+  ]
+}

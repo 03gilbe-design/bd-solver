@@ -1,0 +1,15 @@
+{
+  "_fonte": "pattern trick foto 06-30-10: vendite per punto-vendita x prodotto x anno (ternaria), reparto (N:N)",
+  "entita": {
+    "PRODOTTO":      {"attr": ["pid","descrizione","prezzo_base"], "id": [["pid"]]},
+    "REPARTO":       {"attr": ["rid","nome"], "id": [["rid"]]},
+    "PUNTO_VENDITA": {"attr": ["codice","citta"], "id": [["codice"]]},
+    "ANNO":          {"attr": ["anno"], "id": [["anno"]]}
+  },
+  "relazioni": {
+    "APPARTIENE": {"tra": ["PRODOTTO","REPARTO"], "card": {"PRODOTTO":[0,"N"], "REPARTO":[0,"N"]}, "attr": []},
+    "VENDITA": {"tra": ["PUNTO_VENDITA","PRODOTTO","ANNO"],
+                "card": {"PUNTO_VENDITA":[0,"N"], "PRODOTTO":[0,"N"], "ANNO":[0,"N"]},
+                "attr": ["quantita","prezzo_vendita"]}
+  }
+}

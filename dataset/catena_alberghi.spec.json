@@ -1,0 +1,25 @@
+{
+  "_fonte": "Belussi 12-22_A (catena alberghi) - esame nuovo, loop successivo dopo scuola_sci",
+  "_skip": "ALBERGO/STANZA/PREZZO/SERVIZIO_AGGIUNTIVO/PRENOTAZIONE (weak entity+N-aria complesse) NON modellati per budget - focus su pattern NUOVO: gerarchia 6 sottotipi + relazione IMPIEGATO->CAPO (self-staff, entita' diverse non ruolo doppio)",
+  "entita": {
+    "ALBERGO": {"attr": ["codice","nome","citta"], "id": [["codice"]]},
+    "DIPENDENTE": {"attr": ["codice","nome","cognome","data_nas","comune_res"], "id": [["codice"]]},
+    "IMPIEGATO": {"attr": []},
+    "ADDETTO_CAMERE": {"attr": []},
+    "ADDETTO_SALA": {"attr": []},
+    "ADDETTO_PRENOTAZIONI": {"attr": []},
+    "CUOCO": {"attr": ["data_diploma"]},
+    "CAPO": {"attr": []},
+    "INCARICO": {"attr": ["data_inizio","data_fine"], "opt": ["data_fine"], "id": [["data_inizio","DI_ALBERGO","DI_DIPENDENTE"]]},
+    "INCASSO": {"attr": ["mese","anno","importo"], "id": [["mese","anno","DI_ALBERGO_INCASSO"]]}
+  },
+  "relazioni": {
+    "HA_CAPO": {"tra": ["IMPIEGATO","CAPO"], "card": {"IMPIEGATO":[0,1], "CAPO":[0,"N"]}, "attr": []},
+    "DI_ALBERGO": {"tra": ["INCARICO","ALBERGO"], "card": {"INCARICO":[1,1], "ALBERGO":[0,"N"]}, "attr": []},
+    "DI_DIPENDENTE": {"tra": ["INCARICO","DIPENDENTE"], "card": {"INCARICO":[1,1], "DIPENDENTE":[0,"N"]}, "attr": []},
+    "DI_ALBERGO_INCASSO": {"tra": ["INCASSO","ALBERGO"], "card": {"INCASSO":[1,1], "ALBERGO":[0,"N"]}, "attr": []}
+  },
+  "isa": [
+    {"padre":"DIPENDENTE","figli":["IMPIEGATO","ADDETTO_CAMERE","ADDETTO_SALA","ADDETTO_PRENOTAZIONI","CUOCO","CAPO"],"strategia":"figli"}
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "_fonte": "Belussi 1-18_A (scuola di sci) - MAI toccato prima, esame nuovo per il test",
+  "_skip": "CORSO_IND (corsi individuali, stesso pattern di CORSO_GRUPPI) e STAFF (DIRIGENTE-IMPIEGATO, gap ruoli GAPS.md) NON modellati - onesto, non fingo copertura 100%",
+  "entita": {
+    "TIPO": {"attr": ["nome","descrizione"], "id": [["nome"]]},
+    "CORSO_GRUPPI": {"attr": ["codice","data","data_fine","max_part"], "id": [["codice"]]},
+    "GRUPPO": {"attr": ["lettera","luogo","ora_inizio","ora_fine"], "id": [["lettera","DI_CORSO"]]},
+    "UTENTE": {"attr": ["codice_fis","nome","cognome","data_nas","email","livello"],
+               "opt": ["email","livello"], "id": [["codice_fis"]]},
+    "DIPENDENTE": {"attr": ["matricola","codice_fis","nome","cognome","data_nas"], "id": [["matricola"]]},
+    "MAESTRO_SCI": {"attr": ["data_titolo"], "id": [["matricola"]]},
+    "RESOCONTO": {"attr": ["mese","anno","tot_ore_gruppi","tot_corsi_ind"], "id": [["mese","anno","DI_MAESTRO"]]}
+  },
+  "relazioni": {
+    "DI_TIPO":       {"tra": ["CORSO_GRUPPI","TIPO"], "card": {"CORSO_GRUPPI":[1,1], "TIPO":[0,"N"]}, "attr": []},
+    "DI_CORSO":      {"tra": ["GRUPPO","CORSO_GRUPPI"], "card": {"GRUPPO":[1,1], "CORSO_GRUPPI":[0,"N"]}, "attr": []},
+    "ISCRIZIONE":    {"tra": ["UTENTE","CORSO_GRUPPI"], "card": {"UTENTE":[0,"N"], "CORSO_GRUPPI":[0,"N"]}, "attr": ["giudizio"], "opt_attr": ["giudizio"]},
+    "ASSEGNAZIONE":  {"tra": ["UTENTE","GRUPPO"], "card": {"UTENTE":[0,"N"], "GRUPPO":[0,"N"]}, "attr": []},
+    "ATTIVITA_GRUPPI": {"tra": ["MAESTRO_SCI","GRUPPO"], "card": {"MAESTRO_SCI":[0,"N"], "GRUPPO":[0,"N"]}, "attr": []},
+    "DI_MAESTRO":    {"tra": ["RESOCONTO","MAESTRO_SCI"], "card": {"RESOCONTO":[1,1], "MAESTRO_SCI":[0,"N"]}, "attr": []}
+  },
+  "isa": [
+    {"padre":"DIPENDENTE","figli":["MAESTRO_SCI"],"strategia":"accorpa_nei_figli"}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_nota": "N:N -> tabella APPARTIENE; ternaria -> tabella VENDITA con PK = 3 chiavi + attr relazione",
+  "tabelle": {
+    "PRODOTTO":      {"pk": ["pid"], "nullable": [], "fk_verso": []},
+    "REPARTO":       {"pk": ["rid"], "nullable": [], "fk_verso": []},
+    "PUNTO_VENDITA": {"pk": ["codice"], "nullable": [], "fk_verso": []},
+    "ANNO":          {"pk": ["anno"], "nullable": [], "fk_verso": []},
+    "APPARTIENE":    {"pk": ["prodotto_pid","reparto_rid"], "nullable": [], "fk_verso": ["PRODOTTO","REPARTO"]},
+    "VENDITA":       {"pk": ["punto_vendita_codice","prodotto_pid","anno_anno"], "nullable": [], "fk_verso": ["ANNO","PRODOTTO","PUNTO_VENDITA"]}
+  }
+}
