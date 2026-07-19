@@ -12,3 +12,4 @@ dataset_pt2/out_*/
 *.out
 *.png
 *.pdf
+!assets/*.png
