@@ -16,6 +16,17 @@ BTree_Hash.pdf (teoria ufficiale, vincoli di riempimento):
   se il totale sta in un nodo -> vero merge, altrimenti redistribuzione;
   la propagazione puo' far scendere l'altezza (root con 1 figlio -> il figlio e' la nuova root)
 
+FIX 2026-07-19 (da Esercitazione_2015-soluzioni.pdf): per un nodo IN MEZZO (non
+primo ne' ultimo figlio) in underflow, la scelta del fratello sinistro vs destro
+non e' arbitraria — il prof preferisce il lato che produce un VERO MERGE (non
+una redistribuzione), quando solo un lato lo permette. Esempio ufficiale:
+root(L,T), foglie (B,E,G)(L,N)(T,Z), fan-out 4, delete L -> foglia (N) sotto
+minimo; fondere a sinistra darebbe (B,E,G,N)=4 chiavi>max (redistribuzione),
+fondere a destra da' (N,T,Z)=3 chiavi<=max (vero merge) -> il prof sceglie
+destra. Implementato in _merge: prova il lato che da' vero merge; se nessuno
+dei due o entrambi, default sinistra (comportamento invariato per i casi limite
+gia' verificati: primo/ultimo figlio restano come da 20_esR/Esercitazione_2016).
+
 Rappresentazione: foglia = lista ordinata di chiavi; nodo interno = {"ch": [figli]}.
 Le chiavi dei nodi interni si ricalcolano sempre da zero (regola del minimo a destra),
 come nell'esercizio ufficiale ("i valori chiave sono stati ricalcolati")."""
@@ -87,9 +98,28 @@ def insert(root, key, f):
 def delete(root, key, f):
     min_ptr, min_keys = _mins(f)
 
+    def _would_merge(a_node, b_node):
+        """True se unire a_node+b_node darebbe un vero merge (non redistribuzione)"""
+        if is_leaf(a_node):
+            return len(a_node) + len(b_node) <= f - 1
+        return len(a_node["ch"]) + len(b_node["ch"]) <= f
+
     def _merge(children, i):
-        """fonde/redistribuisce il figlio i col fratello sinistro (o destro se i==0)"""
-        j = i - 1 if i > 0 else i + 1
+        """fonde/redistribuisce il figlio i col fratello sinistro o destro.
+        Preferenza: se un solo lato produce un vero merge (non redistribuzione)
+        si sceglie quello (coerente con l'esempio ufficiale Esercitazione_2015,
+        dove per un nodo di mezzo si sceglie il lato che permette il merge vero);
+        altrimenti si sceglie sinistra di default (o destra se i==0, primo figlio)."""
+        left_ok = i > 0 and _would_merge(children[i - 1], children[i])
+        right_ok = i < len(children) - 1 and _would_merge(children[i], children[i + 1])
+        if i == 0:
+            j = i + 1
+        elif i == len(children) - 1:
+            j = i - 1
+        elif right_ok and not left_ok:
+            j = i + 1
+        else:
+            j = i - 1
         a, b = (j, i) if j < i else (i, j)
         left, right = children[a], children[b]
         if is_leaf(left):

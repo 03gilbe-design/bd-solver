@@ -30,6 +30,15 @@ CASI DI SELEZIONE SULLA TABELLA INTERNA (parametro interna_selezionata):
   come da formula base della slide. Impostare pagine_sel_inner=np_inner e
   nr_sel_inner=nr_inner in questo caso (nessuna riduzione).
 
+LIMITE NOTO (scoperto 2026-07-19 su Esercitazione_2015-soluzioni.pdf, esame con
+join a 3 tabelle RICETTA-COMPOSIZIONE-INGREDIENTE): questo motore gestisce SOLO
+join a 2 tabelle. Con 3+ tabelle la formula ufficiale si estende naturalmente
+(costo = NP(prima) + NR(prima_sel)*NP(seconda)*NP(terza), con indice sostituire
+l'ultimo NP con [d+NR_sel/VAL]) ma NON e' implementata: solve() qui sotto
+accetta solo outer+inner. Se un esame ha join a 3 tabelle, calcolare a mano
+con la stessa logica (moltiplicare per NP di ogni tabella aggiuntiva in catena)
+o estendere solve() con una lista di tabelle interne invece di una singola.
+
 CASO SIMMETRICO: selezione sull'ESTERNA scritta su disco (parametro
 outer_pagine_scritte, es. esame 08/06/2023 es.f: "il risultato viene salvato in
 10 pagine" per PAZIENTE che e' la tabella ESTERNA del join, mentre VISITA
