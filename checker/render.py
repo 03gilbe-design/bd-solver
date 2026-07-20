@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import er
 
 STANDALONE_HEADER = r"""\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning}
