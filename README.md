@@ -10,10 +10,17 @@ Entrambe girano su **Termux** (parte deterministica = Python stdlib puro, niente
 
 ## Esempi grafici (output reale del motore)
 
-| Diagramma ER (parte 1) | Grafo conflitti (parte 2) | B+-tree (parte 2) |
-|---|---|---|
-| ![ER](assets/pt1_er_esempio.png) | ![Grafo](assets/pt2_grafo_conflitti.png) | ![B+tree](assets/pt2_btree_esempio.png) |
-| entità/relazioni/attributi, ternaria + N:N | nodi=transazioni, frecce=conflitti (TikZ) | build fan-out 5, catena foglie tratteggiata |
+**Diagramma ER** (parte 1) — entità/relazioni/attributi, ternaria + N:N:
+
+![ER](assets/pt1_er_esempio.png)
+
+**Grafo dei conflitti** (parte 2) — nodi=transazioni, frecce=conflitti (TikZ):
+
+![Grafo](assets/pt2_grafo_conflitti.png)
+
+**B+-tree** (parte 2) — build fan-out 5, catena foglie tratteggiata:
+
+![B+tree](assets/pt2_btree_esempio.png)
 
 ---
 
