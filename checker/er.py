@@ -69,6 +69,9 @@ def check(spec):
         tra = d.get("tra", [])
         if len(tra) < 2:
             errs.append(f"relazione '{r}' collega meno di 2 entita")
+        for ka in d.get("key_attr", []):
+            if ka not in d.get("attr", []):
+                errs.append(f"relazione '{r}': key_attr '{ka}' non e' fra i suoi attributi propri")
         for e in tra:
             if e not in ent:
                 errs.append(f"relazione '{r}' riferisce entita inesistente '{e}'")
@@ -281,7 +284,15 @@ def _add_fk_multi(spec, tables, host, targets, rel):
 def _rel_table(spec, tables, r, d):
     """opt_attr: attributi della relazione N:N/n-aria che sono opzionali (es. Giudizio* nel
     testo prof) -> nullable=True. Prima venivano sempre resi obbligatori: gap reale trovato
-    confrontando la traduzione con la soluzione ufficiale di scuola_sci."""
+    confrontando la traduzione con la soluzione ufficiale di scuola_sci.
+
+    key_attr: attributi PROPRI della relazione che fanno parte della CHIAVE PRIMARIA insieme
+    alle FK verso le entita' partecipanti — non solo le FK. Serve quando la stessa coppia (o
+    tripla) di entita' puo' ripetersi nella tabella distinta da un attributo proprio (es. stesso
+    STUDENTE+CORSO ma ANNO diverso: la chiave e' (studente_id, corso_id, anno), non solo le FK).
+    Senza key_attr la tabella accetterebbe solo UNA riga per combinazione di entita', perdendo
+    le ripetizioni legittime — bug reale, mai gestito prima (tutti gli attributi propri erano
+    sempre pk=False)."""
     cols, fks = [], []
     for e in d["tra"]:
         for a in _pk_attrs(spec, e):
@@ -289,8 +300,10 @@ def _rel_table(spec, tables, r, d):
             cols.append((cn, True, False))
         fks.append(([f"{e.lower()}_{a}" for a in _pk_attrs(spec, e)], e))
     opt_attr = set(d.get("opt_attr", []))
+    key_attr = set(d.get("key_attr", []))
     for a in d.get("attr", []):
-        cols.append((a, False, a in opt_attr))
+        is_key = a in key_attr
+        cols.append((a, is_key, (a in opt_attr) and not is_key))
     tables[r] = {"name": r, "cols": cols, "fk": fks}
 
 KEY_L, KEY_R = "\x01", "\x02"  # marcatori chiave (non collidono con '_' nei nomi)

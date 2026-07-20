@@ -21,6 +21,35 @@ pk = [c for c,ispk,_ in t["ISCRITTO"]["cols"] if ispk]
 assert set(pk) == {"studente_matricola","corso_codice"}, pk
 assert "data_iscrizione" in [c for c,_,_ in t["ISCRITTO"]["cols"]]
 
+# --- N:N con key_attr: chiave composta include un attributo PROPRIO della relazione,
+# non solo le FK verso le entita' (es. stesso STUDENTE+CORSO ma ANNO diverso: senza
+# 'anno' in chiave la tabella accetterebbe solo una riga per coppia studente-corso)
+spec_ka = {
+  "entita": {
+    "STUDENTE": {"attr": ["matricola","nome"], "id": [["matricola"]]},
+    "CORSO":    {"attr": ["codice","titolo"], "id": [["codice"]]},
+  },
+  "relazioni": {
+    "ESAME": {"tra": ["STUDENTE","CORSO"],
+              "card": {"STUDENTE": [0,"N"], "CORSO": [0,"N"]},
+              "attr": ["anno","voto"],
+              "key_attr": ["anno"]},
+  }
+}
+assert er.check(spec_ka) == [], er.check(spec_ka)
+t_ka = {x["name"]: x for x in er.translate(spec_ka)}
+pk_ka = [c for c, ispk, _ in t_ka["ESAME"]["cols"] if ispk]
+assert set(pk_ka) == {"studente_matricola", "corso_codice", "anno"}, pk_ka
+non_pk = [c for c, ispk, _ in t_ka["ESAME"]["cols"] if not ispk]
+assert non_pk == ["voto"], non_pk
+
+# key_attr invalido -> errore di validazione
+spec_ka_bad = dict(spec_ka)
+spec_ka_bad["relazioni"] = dict(spec_ka["relazioni"])
+spec_ka_bad["relazioni"]["ESAME"] = dict(spec_ka["relazioni"]["ESAME"])
+spec_ka_bad["relazioni"]["ESAME"]["key_attr"] = ["inesistente"]
+assert any("non e' fra i suoi attributi" in e for e in er.check(spec_ka_bad)), er.check(spec_ka_bad)
+
 # --- 1:N -> FK sul lato N, niente tabella
 spec2 = {
   "entita": {
