@@ -6,8 +6,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 import er
 
 STANDALONE_HEADER = r"""\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning}
+% font sans-serif (helvetica) invece del serif LaTeX di default - richiesta utente,
+% stesso trattamento gia' applicato ai PDF parte 2
+\usepackage[scaled=.95]{helvet}\renewcommand{\familydefault}{\sfdefault}
 \begin{document}
 """
 STANDALONE_FOOTER = r"\end{document}" + "\n"
@@ -75,6 +80,8 @@ HEADER = r"""\documentclass[11pt]{article}
 \usepackage{forest}
 \usepackage{pdflscape}
 \usepackage{pdfpages}
+% font sans-serif (helvetica) invece del serif LaTeX di default - richiesta utente
+\usepackage[scaled=.95]{helvet}\renewcommand{\familydefault}{\sfdefault}
 \begin{document}
 \begin{center}\Large\textbf{Basi di Dati --- Soluzione esame}\end{center}
 """

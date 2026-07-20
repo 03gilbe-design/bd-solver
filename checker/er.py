@@ -692,9 +692,10 @@ def tikz(spec):
            r"  isa/.style={draw,thick,isosceles triangle,shape border rotate=-90,"
            r"fill=green!20,minimum size=0.7cm,inner sep=1pt},",
            r"  every node/.style={font=\small}]"]
-    def lbl(s): return s.replace("_", r"\_")
+    def lbl(s): return s.replace("_", " ")   # PUNTO_VENDITA -> "PUNTO VENDITA" (richiesta
+                                              # utente: niente underscore visibile nei nomi)
 
-    def _draw_attr_fan(node_id, cx, cy, attrs, offs, keyset, optset, side):
+    def _draw_attr_fan(node_id, cx, cy, attrs, offs, keyset, optset, side, box_hw=None):
         """Disegna un ventaglio di attributi su UN lato (N/S/E/W) del nodo, con indici
         (per id univoci) presi da offs cosi' i lati non si scontrano fra loro.
 
@@ -706,7 +707,12 @@ def tikz(spec):
         rettangolo (costante, il testo non la cambia). Prima veniva sempre usata la
         larghezza anche per lo spacing verticale: bug reale che sprecava spazio con
         testi lunghi e stringeva troppo con testi corti sui lati E/W — le linee (rami
-        verso i pallini) sono l'elemento flessibile, i rettangoli di testo no."""
+        verso i pallini) sono l'elemento flessibile, i rettangoli di testo no.
+
+        box_hw: semilarghezza del box (solo per side N/S). Se pochi attributi (1-2) su
+        un box LUNGO, distribuirli equidistanti sull'intera larghezza del box invece di
+        lasciarli ammassati al centro (richiesta utente: "rettangolo lungo con 2
+        attributi" doveva sfruttare tutto lo spazio disponibile)."""
         n = len(attrs)
         if n == 0:
             return
@@ -717,9 +723,15 @@ def tikz(spec):
         else:
             dims = [ROW_H for _ in attrs]                             # altezza costante
         total = sum(dims)
-        pos_along, cum = [], -total / 2.0
-        for w in dims:
-            pos_along.append(cum + w / 2.0); cum += w
+        span = box_hw * 1.5 if (vertical and box_hw and 1 <= n <= 2) else None
+        if span and span > total:
+            # slot equidistanti sull'intera larghezza del box, non ammassati per larghezza
+            # testo (il box e' piu' lungo del bisogno stretto degli attributi)
+            pos_along = [-span / 2.0 + span * (i + 0.5) / n for i in range(n)]
+        else:
+            pos_along, cum = [], -total / 2.0
+            for w in dims:
+                pos_along.append(cum + w / 2.0); cum += w
         ydir = 1 if side == "N" else (-1 if side == "S" else 0)
         xdir = 1 if side == "E" else (-1 if side == "W" else 0)
         for i, a in enumerate(attrs):
@@ -780,18 +792,19 @@ def tikz(spec):
         busy = _busy_sides(node_id) if node_id in pos else set()
         pref = [s for s in ("N", "S", "E", "W") if s not in busy] + \
                [s for s in ("N", "S", "E", "W") if s in busy]
+        bhw = max(E_HW, 0.11 * len(node_id) + 0.3) if node_id in spec.get("entita", {}) else None
         if n <= 4:
-            _draw_attr_fan(node_id, cx, cy, attrs, 0, keyset, optset, pref[0])
+            _draw_attr_fan(node_id, cx, cy, attrs, 0, keyset, optset, pref[0], bhw)
         elif n <= 8:
             half = (n + 1) // 2
-            _draw_attr_fan(node_id, cx, cy, attrs[:half], 0, keyset, optset, pref[0])
-            _draw_attr_fan(node_id, cx, cy, attrs[half:], half, keyset, optset, pref[1])
+            _draw_attr_fan(node_id, cx, cy, attrs[:half], 0, keyset, optset, pref[0], bhw)
+            _draw_attr_fan(node_id, cx, cy, attrs[half:], half, keyset, optset, pref[1], bhw)
         else:
             q = (n + 3) // 4
             groups = [attrs[i:i+q] for i in range(0, n, q)]
             off = 0
             for g, side in zip(groups, pref):
-                _draw_attr_fan(node_id, cx, cy, g, off, keyset, optset, side)
+                _draw_attr_fan(node_id, cx, cy, g, off, keyset, optset, side, bhw)
                 off += len(g)
         return sum(max(0.9, 0.11 * len(a) + 0.35) for a in attrs)
 
@@ -853,16 +866,30 @@ def tikz(spec):
                 # ANCHOR in base alla direzione reale della linea (bug reale: prima sempre
                 # "above" anche su linee verticali, dove "sopra" cade proprio nella zona
                 # occupata dal ventaglio attributi sul lato N dell'entita' -> sovrapposizione.
-                # Linea orizzontale -> above; linea verticale -> a lato, sul lato LIBERO
-                # dell'entita' quando lo sappiamo, cosi' non incrocia i suoi attributi).
+                # FIX GEOMETRICO (sostituisce l'euristica above/left/right precedente, che
+                # su una linea DIAGONALE restava comunque a ridosso del tratto: "above" in
+                # TikZ e' solo un piccolo offset costante in una direzione fissa, non tiene
+                # conto dell'angolo della linea). La linea di relazione e' l'elemento FISSO
+                # (non si sposta); l'etichetta cardinalita' viene spostata di un margine
+                # esplicito PERPENDICOLARE alla linea, qualunque sia il suo angolo — cosi'
+                # non tocca mai il tratto, nemmeno in diagonale.
                 ex_, ey_ = pos[e]; rx_, ry_ = best
                 dx_, dy_ = ex_ - rx_, ey_ - ry_
-                if abs(dx_) >= abs(dy_) * 0.6:
-                    anchor = "above"
-                else:
-                    busy_e = _busy_sides(e) if e in pos else set()
-                    anchor = "left" if "E" not in busy_e else "right"
-                out.append(f"  \\draw[thick] ({r}) -- node[{anchor},pos=0.72,font=\\tiny]{{({c[e][0]},{c[e][1]})}} ({e});")
+                px_ = rx_ + dx_ * 0.55; py_ = ry_ + dy_ * 0.55   # punto sulla linea, piu'
+                                                                    # lontano dal bordo box
+                                                                    # (0.72 ci finiva quasi dentro)
+                seglen = max((dx_**2 + dy_**2) ** 0.5, 1e-6)
+                nx_, ny_ = -dy_ / seglen, dx_ / seglen             # normale unitaria (2 versi)
+                MARGIN = 0.35
+                cand1 = (px_ + nx_ * MARGIN, py_ + ny_ * MARGIN)
+                cand2 = (px_ - nx_ * MARGIN, py_ - ny_ * MARGIN)
+                # sceglie il verso che allontana di PIU' dal centro dell'entita' (mai verso
+                # fissa "above": su una diagonale quella spingeva l'etichetta dentro il box)
+                d1 = (cand1[0]-ex_)**2 + (cand1[1]-ey_)**2
+                d2 = (cand2[0]-ex_)**2 + (cand2[1]-ey_)**2
+                lx_, ly_ = cand1 if d1 >= d2 else cand2
+                out.append(f"  \\draw[thick] ({r}) -- ({e});")
+                out.append(f"  \\node[font=\\tiny] at ({lx_:.2f},{ly_:.2f}) {{({c[e][0]},{c[e][1]})}};")
         if d.get("attr"):
             draw_attrs(r, best[0], best[1], d["attr"], set(), set(), upward=False)
     # ISA: un solo nodo "spina" (triangolo, stile tikz-er2) tra il padre e i figli, invece di
