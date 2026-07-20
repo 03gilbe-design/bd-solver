@@ -12,15 +12,15 @@ Entrambe girano su **Termux** (parte deterministica = Python stdlib puro, niente
 
 **Diagramma ER** (parte 1) — entità/relazioni/attributi, ternaria + N:N:
 
-![ER](assets/pt1_er_esempio.png)
+<img src="assets/pt1_er_esempio.png" width="420">
 
 **Grafo dei conflitti** (parte 2) — nodi=transazioni, frecce=conflitti (TikZ):
 
-![Grafo](assets/pt2_grafo_conflitti.png)
+<img src="assets/pt2_grafo_conflitti.png" width="420">
 
 **B+-tree** (parte 2) — build fan-out 5, catena foglie tratteggiata:
 
-![B+tree](assets/pt2_btree_esempio.png)
+<img src="assets/pt2_btree_esempio.png" width="600">
 
 ---
 
