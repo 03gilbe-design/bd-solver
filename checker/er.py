@@ -891,7 +891,11 @@ def tikz(spec):
                 out.append(f"  \\draw[thick] ({r}) -- ({e});")
                 out.append(f"  \\node[font=\\tiny] at ({lx_:.2f},{ly_:.2f}) {{({c[e][0]},{c[e][1]})}};")
         if d.get("attr"):
-            draw_attrs(r, best[0], best[1], d["attr"], set(), set(), upward=False)
+            # key_attr: attributi propri della relazione che fanno parte della chiave
+            # composta -> pallino PIENO come gli attributi-chiave di un'entita' (bug reale:
+            # la traduzione relazionale li sapeva chiave (vedi _rel_table), il DISEGNO no,
+            # li mostrava sempre come pallino vuoto anche se erano nella PK di ESAME/simili)
+            draw_attrs(r, best[0], best[1], d["attr"], set(d.get("key_attr", [])), set(), upward=False)
     # ISA: un solo nodo "spina" (triangolo, stile tikz-er2) tra il padre e i figli, invece di
     # una freccia per figlio che converge caoticamente sul padre (difetto visto confrontando
     # con 3 diagrammi reali del prof: loro disegnano SEMPRE la generalizzazione come padre--
