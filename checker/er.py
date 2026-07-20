@@ -696,16 +696,30 @@ def tikz(spec):
 
     def _draw_attr_fan(node_id, cx, cy, attrs, offs, keyset, optset, side):
         """Disegna un ventaglio di attributi su UN lato (N/S/E/W) del nodo, con indici
-        (per id univoci) presi da offs cosi' i lati non si scontrano fra loro."""
+        (per id univoci) presi da offs cosi' i lati non si scontrano fra loro.
+
+        Ogni etichetta attributo occupa un vero e proprio RETTANGOLO (larghezza legata
+        al testo, altezza costante = una riga di font \\tiny) — non un punto. Sul lato
+        N/S il ventaglio si spande in ORIZZONTALE: la spaziatura fra un attributo e il
+        successivo deve usare la LARGHEZZA del rettangolo (il testo). Sul lato E/W il
+        ventaglio si spande in VERTICALE: la spaziatura deve usare l'ALTEZZA del
+        rettangolo (costante, il testo non la cambia). Prima veniva sempre usata la
+        larghezza anche per lo spacing verticale: bug reale che sprecava spazio con
+        testi lunghi e stringeva troppo con testi corti sui lati E/W — le linee (rami
+        verso i pallini) sono l'elemento flessibile, i rettangoli di testo no."""
         n = len(attrs)
         if n == 0:
             return
-        widths = [max(0.9, 0.11 * len(a) + 0.35) for a in attrs]
-        total = sum(widths)
-        pos_along, cum = [], -total / 2.0
-        for w in widths:
-            pos_along.append(cum + w / 2.0); cum += w
         vertical = side in ("N", "S")
+        ROW_H = 0.34   # altezza costante di una riga di etichetta \tiny
+        if vertical:
+            dims = [max(0.9, 0.11 * len(a) + 0.35) for a in attrs]   # larghezza testo
+        else:
+            dims = [ROW_H for _ in attrs]                             # altezza costante
+        total = sum(dims)
+        pos_along, cum = [], -total / 2.0
+        for w in dims:
+            pos_along.append(cum + w / 2.0); cum += w
         ydir = 1 if side == "N" else (-1 if side == "S" else 0)
         xdir = 1 if side == "E" else (-1 if side == "W" else 0)
         for i, a in enumerate(attrs):
@@ -724,13 +738,22 @@ def tikz(spec):
             linestyle = "dashed" if a in optset else "solid"
             out.append(f"    \\draw[thick,{linestyle}] ({node_id}) -- ({aid});")
 
-    # per ogni entita': quali lati (N/S/E/W) sono OCCUPATI da linee in arrivo (rombi
-    # collegati, hub ISA)? Gli attributi vanno sui lati LIBERI (idea utente: "attributi
-    # occupano quel lato che non viene occupato").
+    # per ogni entita' O RELAZIONE: quali lati (N/S/E/W) sono OCCUPATI da linee in arrivo
+    # (rombi/entita' collegati, hub ISA)? Gli attributi vanno sui lati LIBERI (idea utente:
+    # "attributi occupano quel lato che non viene occupato"). BUG REALE trovato: funzionava
+    # solo per le entita' (cercava relazioni con e in tra) — per una RELAZIONE (es. il rombo
+    # di una ternaria con attributi propri tipo quantita/prezzo) ritornava sempre insieme
+    # vuoto, quindi il ventaglio finiva sempre sul lato N di default, spesso proprio dove
+    # sta una delle entita' collegate vicine (sovrapposizione osservata: PRODOTTO/pid vs
+    # prezzo_vendita del rombo ternario). Ora gestisce anche il caso nodo=relazione.
     def _busy_sides(e):
         busy = set()
         ex, ey = pos[e]
         neighbors = []
+        if e in rel:
+            for other in rel[e].get("tra", []):
+                if other in pos:
+                    neighbors.append(pos[other])
         for r, d in rel.items():
             if r in pos and e in d.get("tra", []):
                 neighbors.append(pos[r])
@@ -826,8 +849,20 @@ def tikz(spec):
                 # pos=0.8: etichetta cardinalita' vicino all'ENTITA' (non a meta' linea) -
                 # convenzione Chen standard, mancava: finiva ambigua al centro dell'arco.
                 # cardinalita' SEMPRE orizzontale (niente sloped: l'etichetta ruotata lungo
-                # la linea era illeggibile/si sovrapponeva - richiesta esplicita utente)
-                out.append(f"  \\draw[thick] ({r}) -- node[above,pos=0.72,font=\\tiny]{{({c[e][0]},{c[e][1]})}} ({e});")
+                # la linea era illeggibile/si sovrapponeva - richiesta esplicita utente).
+                # ANCHOR in base alla direzione reale della linea (bug reale: prima sempre
+                # "above" anche su linee verticali, dove "sopra" cade proprio nella zona
+                # occupata dal ventaglio attributi sul lato N dell'entita' -> sovrapposizione.
+                # Linea orizzontale -> above; linea verticale -> a lato, sul lato LIBERO
+                # dell'entita' quando lo sappiamo, cosi' non incrocia i suoi attributi).
+                ex_, ey_ = pos[e]; rx_, ry_ = best
+                dx_, dy_ = ex_ - rx_, ey_ - ry_
+                if abs(dx_) >= abs(dy_) * 0.6:
+                    anchor = "above"
+                else:
+                    busy_e = _busy_sides(e) if e in pos else set()
+                    anchor = "left" if "E" not in busy_e else "right"
+                out.append(f"  \\draw[thick] ({r}) -- node[{anchor},pos=0.72,font=\\tiny]{{({c[e][0]},{c[e][1]})}} ({e});")
         if d.get("attr"):
             draw_attrs(r, best[0], best[1], d["attr"], set(), set(), upward=False)
     # ISA: un solo nodo "spina" (triangolo, stile tikz-er2) tra il padre e i figli, invece di
