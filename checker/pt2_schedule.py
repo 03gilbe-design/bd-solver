@@ -132,6 +132,85 @@ def serial_schedule(ops, order):
     ts = transactions(ops)
     return [op for t in order for op in ts[t]]
 
+def fmt_op(op):
+    a, t, o = op
+    return f"{a}{t}({o})"
+
+
+def ciclo(ops):
+    """Un ciclo del grafo dei conflitti come lista [T_a, T_b, ..., T_a], o None."""
+    edges = conflict_graph(ops)
+    adj = {}
+    for a, b in edges:
+        adj.setdefault(a, []).append(b)
+    def dfs(n, path):
+        for m in sorted(adj.get(n, [])):
+            if m in path:
+                return path[path.index(m):] + [m]
+            r = dfs(m, path + [m])
+            if r:
+                return r
+        return None
+    for s in sorted(adj):
+        r = dfs(s, [s])
+        if r:
+            return r
+    return None
+
+
+def vincoli_view(ops):
+    """Precedenze che un seriale view-equivalente DEVE rispettare, come nelle soluzioni
+    del prof ('LeggeDa(S) = ... => t2 < t1'): lettura da w_j -> T_j < T_i; lettura del
+    valore iniziale -> T_i prima di ogni scrittore di x; scrittura finale di T_f su x ->
+    ogni altro scrittore di x prima di T_f."""
+    writers = {}
+    for a, t, o in ops:
+        if a == "w":
+            writers.setdefault(o, set()).add(t)
+    v = set()
+    for (r, w) in reads_from(ops):
+        _, ti, o = r
+        _, tj, _ = w
+        if tj == 0:
+            v |= {(ti, tk) for tk in writers.get(o, ()) if tk != ti}
+        else:
+            v.add((tj, ti))
+    for _, tf, o in final_writes(ops):
+        v |= {(tk, tf) for tk in writers.get(o, ()) if tk != tf}
+    return sorted(v)
+
+
+def seriale_view(ops):
+    """Primo ordine seriale view-equivalente a S, o None (esaustivo come is_vsr)."""
+    ts = transactions(ops)
+    rf, fw = reads_from(ops), final_writes(ops)
+    for perm in permutations(sorted(ts)):
+        serial = [op for t in perm for op in ts[t]]
+        if reads_from(serial) == rf and final_writes(serial) == fw:
+            return perm
+    return None
+
+
+def perche_non_2pl(ops):
+    """None se 2PL, altrimenti il motivo (per 'giustificare la risposta')."""
+    if not is_csr(ops):
+        return "S non è CSR e ogni schedule 2PL è CSR (2PL è contenuto in CSR)"
+    first_use, lock_point = {}, {}
+    for idx, (a, t, o) in enumerate(ops):
+        first_use.setdefault((t, o), idx)
+    for (t, o), idx in first_use.items():
+        lock_point[t] = max(lock_point.get(t, -1), idx)
+    for i in range(len(ops)):
+        for j in range(i + 1, len(ops)):
+            a1, t1, o1 = ops[i]
+            a2, t2, o2 = ops[j]
+            if t1 != t2 and o1 == o2 and "w" in (a1, a2) and lock_point[t1] > j:
+                return (f"T{t1} deve rilasciare il lock su {o1} prima di {fmt_op(ops[j])}, "
+                        f"ma deve ancora acquisire un lock dopo ({fmt_op(ops[lock_point[t1]])}): "
+                        f"violata la regola delle due fasi")
+    return None
+
+
 def is_2pl(ops):
     """Test 2PL insegnato nel corso: simula lock a due fasi 'piu' pigri possibile'.
     Ogni transazione: acquisisce il lock su un oggetto alla prima azione che lo usa,

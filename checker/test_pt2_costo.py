@@ -15,10 +15,15 @@ assert r["totale"] == 780 + 180 + 150 + 9000 == 10110, r["totale"]
 # punto (2): formula ufficiale 50*(2+ceil(396/90)) = 50*(2+5) = 350
 assert pc.costo_nlj_indice(50, 2, 19800 / 50, 90) == 350
 
-# Ottimizzazione 2 (aritmetica ufficiale corretta)
+# Ottimizzazione 2: la FORMULA NLJ del prof torna (475*(3+20)=10925) ...
 assert pc.nr_sel(1900, 4) == 475
 assert pc.costo_nlj(475, 155) == 475 * 155
 assert pc.costo_nlj_indice(475, 3, 38000, 1900) == 10925
+# ... ma la query ha "<> 'pianura'": restano 1900-475 = 1425 comuni (audit 30/09)
+r = pc.solve(np_outer=15, nr_outer=1900, val_sel_outer=4, np_inner=155, pagine_sel_inner=155,
+             nr_sel_inner=38000, val_join_inner=1900, prof_indice=3,
+             interna_selezionata=False, selezione_diverso=True)
+assert r["nr_sel_esterna"] == 1425 and r["totale_indice"] == 15 + 1425 * 23, r
 
 # Esame 23/06/2025 es. f (calcolo del motore, coerente col modello)
 r = pc.solve(np_outer=250, nr_outer=15500, val_sel_outer=10,

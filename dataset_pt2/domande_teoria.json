@@ -1,0 +1,240 @@
+[
+ {
+  "esame": "15 giugno__2025",
+  "lettera": "a",
+  "punti": 4,
+  "q": "Illustrare le proprietà delle transazioni; si indichi quali moduli di un DBMS garantiscono ciascuna di tali proprietà.",
+  "atteso": "acid_moduli"
+ },
+ {
+  "esame": "15 giugno__2025",
+  "lettera": "b",
+  "punti": 4,
+  "q": "Illustrare la struttura ad accesso calcolato (hash), in particolare specificar il funzionamento dell’operazione di inserimento e di ricerca di una tupla di chiave K ed evidenziare i casi in cui è più vantaggiosa di un B+-tree.",
+  "atteso": "hash"
+ },
+ {
+  "esame": "15 giugno__2025",
+  "lettera": "c",
+  "punti": 5,
+  "q": "Illustrare dettagliatamente il concetto di sharding in MongoDB: a cosa serve e perché si utilizza, come viene implementato e quali sono i componenti che lo gestiscono.",
+  "atteso": "sharding"
+ },
+ {
+  "esame": "2015_06_terza_prova",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare l’architettura di un DMBS descrivendo in particolare il modulo di gestione dei buffer; si indichi inoltre, per ogni modulo dell’architettura, quali sono le proprietà delle transazioni che contribuisce a garantire.",
+  "atteso": "architettura_buffer"
+ },
+ {
+  "esame": "2015_06_terza_prova",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Si presenti in dettaglio la definizione di Conflict-Serializzabilità (CSR).",
+  "atteso": "csr"
+ },
+ {
+  "esame": "2015_06_terza_prova",
+  "lettera": "c",
+  "punti": 2,
+  "q": "Lo studente illustri la struttura di accesso ai dati denominata indice primario denso: caratteristiche della struttura, ricerca, inserimento e cancellazione di entry dall’indice.",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "2015_06_terza_prova",
+  "lettera": "d",
+  "punti": 3,
+  "q": "Lo studente illustri l’algoritmo di codifica di Huffmann e mostri un esempio di codifica di un messaggio di lunghezza 4 sull’alfabeto {Z,W,Y,X}.",
+  "atteso": "huffman"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_A",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare l’architettura di un DMBS descrivendo in particolare il modulo di gestione dei buffer; si indichi inoltre quali moduli garantiscono le proprietà di persistenza e consistenza delle transazioni.",
+  "atteso": "architettura_buffer"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_A",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Si presenti in dettaglio la definizione di conflict-equivalenza tra due schedule.",
+  "atteso": "csr"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_A",
+  "lettera": "c",
+  "punti": 2,
+  "q": "Lo studente illustri la struttura di accesso ai dati denominata struttura ad accesso calcolato (hashing), si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice.",
+  "atteso": "hash"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_A",
+  "lettera": "d",
+  "punti": 2,
+  "q": "Lo studente illustri l’algoritmo di ripresa a caldo.",
+  "atteso": "ripresa_caldo"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_B",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare le proprietà delle transazioni; si indichi inoltre quali moduli di un DBMS garantiscono ciascuna di tali proprietà.",
+  "atteso": "acid_moduli"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_B",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Si presenti in dettaglio la definizione di view-equivalenza tra due schedule.",
+  "atteso": "vsr"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_B",
+  "lettera": "c",
+  "punti": 2,
+  "q": "Lo studente illustri la struttura di accesso ai dati denominata B+-tree, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice.",
+  "atteso": "btree"
+ },
+ {
+  "esame": "2022_04_21_III_prova_intermedia_B",
+  "lettera": "d",
+  "punti": 2,
+  "q": "Illustrare il meccanismo di 2PL stretto.",
+  "atteso": "2pl"
+ },
+ {
+  "esame": "2022_06_10_III_prova_intermedia",
+  "lettera": "a",
+  "punti": 2,
+  "q": "Illustrare le proprietà delle transazioni ed indicare da quali moduli del DBMS vengono garantite.",
+  "atteso": "acid_moduli"
+ },
+ {
+  "esame": "2022_06_10_III_prova_intermedia",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Si illustri la definizione di View-serializzabilità e la relazione tra l’insieme degli schedule VSR e l’insieme degli schedule CSR. Presentare la dimostrazione formale di tale relazione.",
+  "atteso": "vsr"
+ },
+ {
+  "esame": "2022_06_10_III_prova_intermedia",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Lo studente illustri la struttura di accesso ai dati denominata indice secondario, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice.",
+  "atteso": "indice_secondario"
+ },
+ {
+  "esame": "2023_06_08_III_prova_intermedia_A",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Illustrare la struttura di accesso ai dati denominata indice secondario, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice secondario.",
+  "atteso": "indice_secondario"
+ },
+ {
+  "esame": "2023_06_08_III_prova_intermedia_A",
+  "lettera": "c",
+  "punti": 2,
+  "q": "Illustrare l’algoritmo di ripresa a caldo, indicando anche quando viene utilizzato e da quale modulo del DBMS viene eseguito.",
+  "atteso": "ripresa_caldo"
+ },
+ {
+  "esame": "2023_06_08_III_prova_intermedia_A",
+  "lettera": "d",
+  "punti": 3,
+  "q": "Illustrare l’algoritmo di ordinamento Z-way Sort-Merge.",
+  "atteso": "sort_merge"
+ },
+ {
+  "esame": "2023_06_08_III_prova_intermedia_B",
+  "lettera": "b",
+  "punti": 2,
+  "q": "Illustrare la struttura di accesso ai dati denominata indice primario, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice secondario.",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "2023_06_08_III_prova_intermedia_B",
+  "lettera": "d",
+  "punti": 3,
+  "q": "Illustrare il funzionamento della struttura ad accesso calcolato hash, specificando in particolare come avvengono le operazioni di ricerca, inserimento e cancellazione.",
+  "atteso": "hash"
+ },
+ {
+  "esame": "2024_06_12_III_prova_intermedia_A__2025",
+  "lettera": "b",
+  "punti": 4,
+  "q": "Illustrare la struttura di accesso ai dati denominata indice primario, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso e le tipologie possibili, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice primario, (iii) la differenza rispetto ad un indice secondario.",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "2024_06_12_III_prova_intermedia_A__2025",
+  "lettera": "c",
+  "punti": 5,
+  "q": "Illustrare il concetto di sharding in MongoDB.",
+  "atteso": "sharding"
+ },
+ {
+  "esame": "2026_06_15-tecnologie_laboratorio-basi_di_dati",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare le proprietà delle transazioni indicando quali moduli di un DBMS relazionale garantiscono ciascuna di esse.",
+  "atteso": "acid_moduli"
+ },
+ {
+  "esame": "2026_06_15-tecnologie_laboratorio-basi_di_dati",
+  "lettera": "b",
+  "punti": 3,
+  "q": "Illustrare la struttura di accesso ai dati denominata indice primario, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso e le tipologie possibili, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice primario, (iii) la differenza rispetto ad un indice secondario. QUERY SQL",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "Esercitazione_2016-soluzioni",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare l’architettura di un DMBS descrivendo in particolare il modulo di gestione dei guasti (o gestore dell’affidabilità); si indichi inoltre, per ogni modulo dell’architettura, quali sono le proprietà delle transazioni che contribuisce a garantire.",
+  "atteso": "architettura_guasti"
+ },
+ {
+  "esame": "Esercitazione_2016-soluzioni",
+  "lettera": "b",
+  "punti": 3,
+  "q": "Si presenti in dettaglio la politica di concessione dei lock applicata dal gestore dell’esecuzione concorrente secondo la tecnica detta “Locking a due fasi”.",
+  "atteso": "2pl"
+ },
+ {
+  "esame": "Esercitazione_2016-soluzioni",
+  "lettera": "c",
+  "punti": 2,
+  "q": "Lo studente illustri la struttura di accesso ai dati denominata indice primario sparso, si descrivano in particolare i seguenti punti: (i) le caratteristiche della struttura di accesso, (ii) l’algoritmo di ricerca di una tupla con chiave K usando l’indice.",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "Esercitazione_2016-soluzioni",
+  "lettera": "d",
+  "punti": 2,
+  "q": "Lo studente illustri le differenze tra i costrutti elemento e attributo del linguaggio XML, mostrando un esempio di documento XML dove vengono utilizzati entrambi.",
+  "atteso": "xml_elem_attr"
+ },
+ {
+  "esame": "2026_09_14_foto",
+  "lettera": "a",
+  "punti": 3,
+  "q": "Illustrare le proprietà delle transazioni indicando quali moduli di un DBMS relazionale garantiscono ciascuna di esse.",
+  "atteso": "acid_moduli"
+ },
+ {
+  "esame": "2026_09_14_foto",
+  "lettera": "b",
+  "punti": 3,
+  "q": "Illustrare la struttura di accesso ai dati denominata indice primario: (i) caratteristiche e tipologie, (ii) algoritmo di ricerca di una tupla con chiave K, (iii) differenza rispetto a un indice secondario.",
+  "atteso": "indice_primario"
+ },
+ {
+  "esame": "2026_09_16_lab",
+  "lettera": "g",
+  "punti": 6,
+  "q": "Descrivere la differenza tra l anomalia di aggiornamento fantasma e l anomalia di lettura inconsistente anche attraverso esempi di transazioni SQL. Indicare il tipo di isolamento minimo per evitare ciascuna anomalia.",
+  "atteso": "anomalie_isolamento"
+ }
+]

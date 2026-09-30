@@ -13,3 +13,9 @@ dataset_pt2/out_*/
 *.png
 *.pdf
 !assets/*.png
+
+# testi di fonti/esami (materiale altrui): restano solo in locale
+riferimenti_teoria/fonti/
+riferimenti_teoria/*.txt
+.claude/
+__pycache__/

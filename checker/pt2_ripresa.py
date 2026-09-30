@@ -42,12 +42,15 @@ def ripresa(log_str):
     steps = [f"Passo 1: {ck_txt}",
              f"Passo 2: UNDO = {_set(undo)} , REDO = {{}}"]
     # Passo 3: dal CK in avanti
+    evoluzione = []   # come il Passo 3 del prof: stato dopo ogni B/C incontrato dopo il CK
     for k, args in log[start:]:
         if k == "B":
             undo.add(args[0])
         elif k == "C":
             undo.discard(args[0]); redo.add(args[0])
         # A(T): resta in UNDO (fonte ufficiale: A(T3) e T3 resta in UNDO)
+        if k in ("B", "C"):
+            evoluzione.append(f"{k}({args[0]}): UNDO = {_set(undo)} , REDO = {_set(redo)}")
     steps.append(f"Passo 3 (finale): UNDO = {_set(undo)} , REDO = {_set(redo)}")
     # Passo 4: undo a ritroso su tutto il log
     undo_actions = []
@@ -71,4 +74,4 @@ def ripresa(log_str):
     steps.append("Passo 5 (REDO, in avanti): " + "; ".join(redo_actions))
     return {"undo": sorted(undo), "redo": sorted(redo),
             "undo_actions": undo_actions, "redo_actions": redo_actions,
-            "steps": steps}
+            "steps": steps, "evoluzione": evoluzione}

@@ -25,7 +25,7 @@ def qa(pdf, tokens):
     # I veri responsabili dei [] sono i font SIMBOLO (Symbol, ZapfDingbats) o custom.
     SAFE = ("helvetica", "arial", "times", "courier")
     if pf:
-        out = subprocess.run([pf, pdf], capture_output=True, text=True).stdout
+        out = subprocess.run([pf, pdf], capture_output=True, encoding="utf-8", errors="replace").stdout
         for ln in out.splitlines()[2:]:
             cols = ln.split()
             if len(cols) >= 6:
@@ -36,7 +36,7 @@ def qa(pdf, tokens):
     else:
         print("  (pdffonts non trovato: salto controllo font)")
     if pt:
-        txt = subprocess.run([pt, pdf, "-"], capture_output=True, text=True).stdout
+        txt = subprocess.run([pt, "-enc", "UTF-8", pdf, "-"], capture_output=True, encoding="utf-8", errors="replace").stdout  # cp1252 di Windows crashava su simboli (30/09)
         if "�" in txt:
             fails.append("testo contiene U+FFFD (carattere di replacement)")
         for tok in tokens:

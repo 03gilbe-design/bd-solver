@@ -262,3 +262,66 @@ hash/MongoDB) + 4 esercizi algoritmici. Motori deterministici:
   fogli-soluzione ufficiali separati (vedi sopra), non da un test end-to-end su questi 2 esami.
 - Esempio PDF generato da questi motori: `out_pt2/gen_soluzione.py` (versione originale,
   esame 23/06/2025) oppure via pipeline generica `dataset_pt2/2025_06_23_recupero.spec.json`.
+
+## TEORIA II parte (domande a/b) - `checker/teoria.py`  [aggiunto 30/09/2026]
+Le domande di teoria sono ~16 modelli con varianti (banca: `riferimenti_teoria/banca_teoria.json`,
+ricavata da 34 domande reali 2015-2026). La banca NON contiene risposte da copiare, solo i punti obbligatori.
+1. `python checker/teoria.py "<testo domanda>" <punti>` -> modello, punti da toccare, lunghezza obiettivo.
+2. Scrivi la risposta CON PAROLE TUE (mai copiare Domande_Tecnologie/teoria basi/Risposte_Teoria).
+3. `python checker/teoria.py "<domanda>" <punti> risposta.txt` -> deve dare ok=true
+   (tutti i punti, 35-90 parole per punto, max 2 sequenze da 8 parole uguali alle fonti).
+4. Modello non riconosciuto -> rispondi dalle slide, poi aggiungi il modello alla banca.
+Niente blocco finale "Giustificazione" ripetuto: la risposta e' gia' completa.
+Test: `python checker/test_teoria.py` (train 31/31, test set = esame 14/09/2026 + lab 16/09/2026, 3/3).
+
+## SQL (domande c/d, lab) - `checker/sql_check.py`  [aggiunto 30/09/2026]
+Scrivi la query in stile prof (3-10 righe, max 15, NESSUNA spiegazione necessaria), poi SEMPRE:
+`python checker/sql_check.py "T1(a,b,c); T2(d,e)" "<testo domanda>" query.sql` -> deve dare ok=true.
+- prepara la query su sqlite con lo schema dell'esame: becca colonne/tabelle inesistenti e sintassi
+  (tradotti ILIKE, ::cast, EXTRACT(YEAR..), CREATE VIEW AS (...)).
+- pattern domanda->costrutto: "mai/nessun" -> NOT EXISTS/NOT IN/EXCEPT; "hanno ... tutti i" -> doppia NOT EXISTS;
+  "maggior numero/massimo" -> MAX/>=ALL; "almeno due" -> HAVING COUNT; "medio" -> AVG; "quanti" -> COUNT/SUM.
+- NON controlla la semantica fine (es. anno sbagliato): rileggi le condizioni WHERE contro la domanda.
+Test: `python checker/test_sql_check.py` (test set = lab 16/09/2026: becca 3/3 refusi veri del prof).
+Velocita misurata 30/09: spec->PDF 1.8s, controlli teoria+SQL 0.5s. Il collo di bottiglia e' il modello (foto+scrittura), non il codice.
+- Solo costrutti visti dal prof: VIEW (non WITH), subquery, HAVING, NOT IN/EXISTS. sql_check avvisa su WITH/OVER/LATERAL/FETCH FIRST.
+- DETTO DAL PROF (riferito da jeans 30/09): il risultato giusto non basta, contano i PASSAGGI e il ragionamento.
+  Negli esercizi mostra sempre i passi del motore (formula -> numeri -> risultato), brevi; mai solo il numero finale.
+- PASSAGGI: `python checker/passaggi_check.py soluzione.txt` (pdftotext del PDF) -> ok=true prima di consegnare.
+  Ordine prof: ripresa CK->UNDO/REDO->UNDO a ritroso->REDO in avanti; concorrenza conflitti->grafo->verdetto;
+  costo formula->numeri (a x b)->totale; B+-tree costruzione->albero dopo OGNI operazione. Max ~300-400 parole/esercizio.
+  (Il B+-tree non riconosciuto nel PDF 12/06 era il titolo "B$^+$" rotto dall'escape: risolto 30/09.)
+
+## Stile PROF + opzioni PDF  [30/09/2026]
+`python checker/solve_pt2.py spec.json out [--minimal] [--verticale]`
+- Sempre (ricavato dalle soluzioni ufficiali): ripresa con Passo 3 stato-per-stato dopo ogni B/C;
+  concorrenza con "poiche' il grafo ha un ciclo..." + VSR giustificata (LeggeDa, ScrittureFinali, vincoli
+  -> seriale o contraddizione) + 2PL giustificata (dal 2022 gli esami chiedono VSR+CSR+2PL "giustificare");
+  costo con i NOMI delle tabelle, NR sel = NR/VAL, totale = (a)+(b)+... = somma; B+-tree con vincoli
+  "2 <= chiavi <= 4" e una frase su cosa succede davvero (split/propaga/merge/livello).
+- Testo d'esame nero, risposta blu rientrata con etichetta SOLUZIONE (stesso font dell'esame).
+- `--minimal`: via le note di spiegazione, restano passi + formule. Teoria: usa il campo spec
+  `risposta_minimal` (scrivila tu, ~20-35 parole/punto, DEVE passare teoria.py); se manca, solve_pt2 avvisa.
+- `--verticale`: colonna 13cm, sfondo nero, testo grande (da scorrere / leggere da lontano); grafi e alberi
+  si rimpiccioliscono da soli alla colonna.
+- Test: `python checker/test_pt2_giustifica.py` (2016: vincoli e seriale T3,T4,T2,T1 identici al prof).
+- `--colori`: log ripresa colorato per tipo (B verde, C blu, A rosso, CK arancio), schedule per transazione,
+  domanda di teoria con parole chiave in grassetto e (i)(ii)(iii) evidenziati -> verifica in 10 secondi che
+  l'ESTRATTO dalla foto sia giusto, senza rileggere tutto.
+- `--quadretti` (pensata per `--minimal`): A4 a quadretti da 5 mm. Il testo d'ESAME (domande, log,
+  schedule) resta stampato normale sulle righe; solo la SOLUZIONE e' scritta "come a mano", in MAIUSCOLO:
+  OGNI carattere (anche lo spazio) occupa un quadretto, poggiato sulla riga (`pt2_render.quaderno`),
+  niente spazi inutili ("{T1,T2,T3}"),
+  36 quadretti per riga, a capo a parole, soluzione rientrata di 1 quadretto, UNA riga vuota fra i paragrafi.
+  B+-tree: 1 cifra = 1 quadretto, 1 quadretto vuoto fra le chiavi, bordi sulle linee, frecce dal centro
+  degli spazi (puntatori); se non entra usa anche i margini (mai piu' vicino di 1 quadretto al bordo del
+  foglio), poi separatori a linea. Grafo: nodi sugli incroci, raggio 1 quadretto.
+  NB: `passaggi_check` va fatto sulla versione normale (nel PDF a quadretti pdftotext legge "P a s s o").
+- Combinabili: es. `--minimal --quadretti --colori`, `--minimal --verticale --colori`.
+
+## Sfida ai materiali del prof - `checker/audit_prof.py`  [30/09/2026]
+Il prof SBAGLIA (12 errori dimostrati su 15 controlli: refusi ripresa, aritmetica ottimizzazione 1, stima
+`<>` ottimizzazione 2, XML non ben formato, SQL lab 16/09 con colonne inesistenti). Quindi: se il nostro
+motore non coincide col prof, NON correggere il motore per farlo coincidere; lancia l'audit e ragiona.
+`pt2_costo.solve(selezione_diverso=True)` per `WHERE A <> v` (NR - NR/VAL, confermato da EsempioOttimizzazione.png).
+Errori degli strumenti e come prevenirli: `STRUMENTI_GOTCHA.md`.

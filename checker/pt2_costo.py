@@ -16,8 +16,10 @@ costo_nlj/costo_nlj_indice qui sotto implementano solo il termine
 NR(R_sel) * NP(S_sel) [risp. NR(R_sel)*(d+NR(S_sel)/VAL)].
 Riscontro aggiuntivo su esercizio interamente risolto:
 lesson_12_03_esercitazione_ottimizzazione_soluzioni.pdf, Ottimizzazione 2:
-475*(3+20)=10925 esatto (Ottimizzazione 1 punto (2) nel PDF ha refusi
+475*(3+20)=10925 esatto COME FORMULA NLJ (Ottimizzazione 1 punto (2) nel PDF ha refusi
 aritmetici nel numero finale — non usarlo come riferimento, solo la formula).
+ATTENZIONE (audit 30/09): nell'Ottimizzazione 2 la query ha "<> 'pianura'", quindi il 475
+del prof e' gia' sbagliato (vale 1425): vedi solve(selezione_diverso=True) e audit_prof.py.
 
 CASI DI SELEZIONE SULLA TABELLA INTERNA (parametro interna_selezionata):
 - True (default, caso standard d'esame "il risultato della selezione viene
@@ -62,7 +64,13 @@ def costo_nlj_indice(nr_outer_sel, prof, nr_inner_sel, val_join):
 
 def solve(np_outer, nr_outer, val_sel_outer,
           np_inner, pagine_sel_inner, nr_sel_inner, val_join_inner,
-          prof_indice=None, interna_selezionata=True, outer_pagine_scritte=0):
+          prof_indice=None, interna_selezionata=True, outer_pagine_scritte=0,
+          selezione_diverso=False):
+    """selezione_diverso=True per WHERE A <> v sull'esterna: restano NR - NR/VAL tuple
+    (complemento dell'uguaglianza, stessa ipotesi di uniformita' delle slide, che danno
+    solo il caso '='). Audit 30/09: Ottimizzazione 2 del prof (lesson_12_03) ha
+    "<> 'pianura'" ma calcola 1900/4 = 475 come se fosse '=': il suo 10.925 e' quindi
+    sbagliato; il test che lo "verificava" confermava solo la formula NLJ, non la stima."""
     """Schema d'esame standard (come es. f 23/06/2025 e Ottimizzazione 1):
     - scansione interna completa + scrittura selezione su disco (pagine_sel_inner)
       SOLO se interna_selezionata=True (altrimenti nessun WHERE sull'interna:
@@ -89,6 +97,8 @@ def solve(np_outer, nr_outer, val_sel_outer,
         pre += outer_pagine_scritte
         steps.append(f"(c-bis) scrittura selezione esterna = {outer_pagine_scritte}")
     ns = nr_sel(nr_outer, val_sel_outer)
+    if selezione_diverso:
+        ns = nr_outer - ns
     d = costo_nlj(ns, np_join_inner)
     steps.append(f"(d) JOIN NLJ = NR_sel_esterna x NP_sel_interna = {ns:g} x {np_join_inner} = {d}")
     out = {"steps": steps, "totale": pre + c + d, "nr_sel_esterna": ns}
