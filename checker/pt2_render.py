@@ -524,6 +524,13 @@ def _btree_tikz(root, caption):
         q = _btree_quadretti(root, caption)
         if q:
             return q
+        global COLONNE
+        if COLONNE < 36:                     # colonna stretta (--quadretti --verticale): disegno a quadretti
+            vecchie, COLONNE = COLONNE, 36   # su 36 colonne, poi \figura lo riduce alla colonna
+            q = _btree_quadretti(root, caption)
+            COLONNE = vecchie
+            if q:
+                return q
         print(f"AVVISO quadretti: albero '{caption}' piu' largo di {COLONNE} quadretti, disegno normale")
     GAP = 0.5          # spazio orizzontale tra nodi foglia
     ROWH = 1.6         # distanza verticale tra livelli

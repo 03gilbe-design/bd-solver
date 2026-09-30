@@ -42,6 +42,16 @@ PAGINA_VERTICALE = r"""\documentclass[12pt]{article}
 # cio' che non ci sta e la pagina nuova riparte allineata (textheight = topskip + 52 righe).
 PAGINA_QUADRETTI = r"""\documentclass[10pt]{article}
 \usepackage[a4paper,top=15mm,left=15mm,textwidth=180mm,textheight=265mm,headheight=0pt,headsep=0pt,footskip=8mm]{geometry}"""
+# --quadretti --verticale: quaderno SCURO a colonna stretta (da scorrere sul telefono). Carta 150x340 mm
+# = 30x68 quadretti, margini 3 quadretti ai lati (resta 1 quadretto dal bordo anche quando il B+-tree usa i
+# margini), testo 24 quadretti, top 3 quadretti, textheight = topskip + 62 righe; fondo nero, griglia scura.
+PAGINA_QUADRETTI_VERTICALE = r"""\documentclass[10pt]{article}
+\usepackage[paperwidth=150mm,paperheight=340mm,top=15mm,left=15mm,textwidth=120mm,textheight=315mm,headheight=0pt,headsep=0pt,footskip=8mm]{geometry}
+\AtBeginDocument{\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000%
+\pagecolor{black}\color{white}\definecolor{sol}{RGB}{110,200,255}\definecolor{griglia}{RGB}{50,58,78}%
+\definecolor{opB}{RGB}{90,220,120}\definecolor{opC}{RGB}{120,180,255}\definecolor{opA}{RGB}{255,110,110}%
+\definecolor{opCK}{RGB}{255,185,60}\definecolor{t1}{RGB}{255,110,110}\definecolor{t2}{RGB}{120,180,255}%
+\definecolor{t3}{RGB}{90,220,120}\definecolor{t4}{RGB}{230,130,255}\definecolor{t0}{RGB}{190,190,190}}"""
 QUADRETTI = r"""
 \definecolor{griglia}{RGB}{185,200,225}
 \AddToHook{shipout/background}{\put(0,0){\setlength\unitlength{5mm}\color{griglia}\linethickness{0.2pt}%
@@ -101,8 +111,14 @@ HEADER = r"""
 """
 
 def build_tex(spec, verticale=False, quadretti=False):
-    L = [PAGINA_QUADRETTI if quadretti else PAGINA_VERTICALE if verticale else PAGINA_A4, HEADER,
-         QUADRETTI if quadretti else "", "\\begin{document}\n"]
+    griglia = QUADRETTI
+    if quadretti and verticale:          # quaderno scuro a colonna stretta: griglia 30x68 invece di 42x60
+        griglia = QUADRETTI.replace("{60}{\\line(1,0){42}}", "{69}{\\line(1,0){30}}") \
+                           .replace("{43}{\\line(0,-1){60}}", "{31}{\\line(0,-1){68}}")
+        pagina = PAGINA_QUADRETTI_VERTICALE
+    else:
+        pagina = PAGINA_QUADRETTI if quadretti else PAGINA_VERTICALE if verticale else PAGINA_A4
+    L = [pagina, HEADER, griglia if quadretti else "", "\\begin{document}\n"]
     # quadretti: il testo d'ESAME resta stampato normale (sulle righe); solo la SOLUZIONE, cioe' quello
     # che si scrive a mano, va nel quaderno: 1 carattere = 1 quadretto, in maiuscolo (richiesta jeans 30/09)
     def q(s):
@@ -130,9 +146,11 @@ def main():
     pt2_render.COLORI = "--colori" in sys.argv
     verticale, quadretti = "--verticale" in sys.argv, "--quadretti" in sys.argv
     pt2_render.QUADRETTI = quadretti
+    if quadretti and verticale:
+        pt2_render.COLONNE = 24          # 120 mm / 5 mm (vedi PAGINA_QUADRETTI_VERTICALE)
     nero = "--nero" in sys.argv          # penna nera "reale" invece del blu
     if len(args) < 2:
-        print("uso: solve_pt2.py spec.json out_dir [--minimal] [--verticale|--quadretti] [--colori]"); sys.exit(1)
+        print("uso: solve_pt2.py spec.json out_dir [--minimal] [--verticale] [--quadretti] [--colori]"); sys.exit(1)
     spec_path, out_dir = args[0], args[1]
     spec = json.load(open(spec_path, encoding="utf8"))
     os.makedirs(out_dir, exist_ok=True)

@@ -333,6 +333,8 @@ Velocita misurata 30/09: spec->PDF 1.8s, controlli teoria+SQL 0.5s. Il collo di 
   foglio), poi separatori a linea. Grafo: nodi sugli incroci, raggio 1 quadretto.
   NB: `passaggi_check` va fatto sulla versione normale (nel PDF a quadretti pdftotext legge "P a s s o").
 - Combinabili: es. `--minimal --quadretti --colori`, `--minimal --verticale --colori`.
+- `--quadretti --verticale` = quaderno SCURO a colonna stretta (150x340 mm, fondo nero, griglia scura,
+  24 quadretti per riga): da leggere sul telefono. B+-tree troppo largo -> disegno a 36 quadretti ridotto alla colonna.
 
 ## CATENA DI CONTROLLO ALL'ESAME (foto -> spec -> PDF)  [30/09/2026]
 Ogni anello ha il suo controllo. Non consegnare finche' non sono tutti verdi.
