@@ -22,6 +22,16 @@ Entrambe girano su **Termux** (parte deterministica = Python stdlib puro, niente
 
 <img src="assets/pt2_btree_esempio.png" width="600">
 
+**Versione a quadretti** (`solve_pt2.py ... --minimal --quadretti --nero`) — A4 a quadretti da 5 mm:
+il testo d'esame resta stampato, la soluzione è scritta "a mano" in maiuscolo, 1 carattere = 1 quadretto
+(I e punteggiatura = mezzo, spazio fra parole = uno intero), riga vuota fra le righe, accenti sopra:
+
+<img src="assets/pt2_quadretti_esempio.png" width="620">
+
+Altre opzioni: `--verticale` (colonna nera, testo grande), `--colori` (estratto colorato per verificarlo),
+`--minimal` (solo passaggi e formule, teoria corta). Controlli: `teoria.py`, `sql_check.py`,
+`passaggi_check.py`, `audit_prof.py` — vedi `AGENTS.md` e `LEGGIMI_PER_CLAUDE.md`.
+
 ---
 
 ## Parte 1 — Progettazione ER
