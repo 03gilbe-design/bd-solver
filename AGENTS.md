@@ -1,6 +1,21 @@
+# INIZIA QUI — esame BD parte 2 (Tecnologie+Lab) da foto, in 5 passi
+
+1. Leggi la foto/PDF dell'esame. Dove non si legge scrivi `??`, poi
+   `python checker/ricostruisci.py archivio "testo con ??"` (gli esami si riciclano).
+2. Scrivi `esame.spec.json` (modello: `dataset_pt2/2025_06_12_terza_prova.spec.json`; tipi: ripresa,
+   schedule, costo, btree, teoria {domanda,risposta,punti}, sql {domanda,query,query2,schema}).
+   Teoria: `python checker/teoria.py "domanda" punti` ti dice i punti da toccare e dove sono nelle slide.
+   SQL: `query2` = seconda formulazione con ALTRA tecnica (serve alla prova vera).
+3. `python esame.py esame.spec.json [testo_esame.txt] [--doppia spec2.json]` -> tabella di controlli.
+4. Sistema solo i punti "DA SISTEMARE" nello SPEC. NON modificare i file in `checker/` (vedi sotto).
+5. Rileggi `out_esame/soluzione.pdf` e `soluzione_minimal.pdf` pagina per pagina e consegna.
+Tutto il resto di questo file e' riferimento: consultalo solo se un passo fallisce.
+
+---
+
 # Modulo AI — comporre e risolvere un esame BD parte 1 da foto (per Claude Code su Termux)
 
-Sessione fredda: leggi TUTTO questo file prima di iniziare, non serve altro contesto.
+Sessione fredda (parte 1 / riferimento).
 **Claude Code legge direttamente le foto** (visione nativa, niente OCR/Tesseract) e ricostruisce
 l'esame. La cartella `BD_Parte1_Solver` contiene un motore deterministico Python stdlib-puro
 (nessun `pip install`, funziona su Termux) per la parte verificabile (progettazione+traduzione).
@@ -327,6 +342,12 @@ Ogni anello ha il suo controllo. Non consegnare finche' non sono tutti verdi.
    - se hai il testo (pdftotext o trascrizione della foto): `python checker/controllo_trascrizione.py spec.json testo.txt`
      (log/schedule identici, numeri presenti, "<>" -> selezione_diverso, "salvato in N pagine").
    - `--colori` nel PDF: rileggi l'estratto colorato contro la foto.
+   - FOTO VENUTA MALE / pezzo che non si vede (solo dopo averla guardata bene):
+     `python checker/ricostruisci.py archivio "testo letto con ?? dove non si legge"` -> gli esami si
+     RICICLANO (14/09/2026 = 15/06/2026): se combacia con un esame d'archivio (riferimenti_teoria/esami/,
+     solo locale) il pezzo si LEGGE dall'originale. `python checker/ricostruisci.py ck "log"` -> CK(??)
+     determinato dalle transazioni attive; T? -> candidati. Numeri: `pt2_fallback.deduci_valore_mancante`
+     (formula + totale visibile). Nel PDF scrivi sempre "[ricostruito da ...]" per i pezzi non letti.
 2. MOTORI: `python checker/test_*.py` tutti verdi (incl. `test_pt2_proprieta.py`).
 3. SQL: sintassi/pattern con `sql_check.py`, poi PROVA VERA: scrivi una seconda query INDIPENDENTE (altra
    tecnica: NOT IN vs NOT EXISTS, MAX vs >= ALL/HAVING) e `python checker/sql_prova.py "schema" q1.sql q2.sql`

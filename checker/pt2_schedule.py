@@ -180,6 +180,25 @@ def vincoli_view(ops):
     return sorted(v)
 
 
+def vincoli_view_disgiuntivi(ops):
+    """(k, j, i): r_i legge da w_j su x e T_k (altro scrittore di x) NON puo' stare tra T_j e T_i
+    -> T_k < T_j oppure T_i < T_k. Completa vincoli_view (che ha solo le precedenze dirette)."""
+    writers = {}
+    for a, t, o in ops:
+        if a == "w":
+            writers.setdefault(o, set()).add(t)
+    out = set()
+    for (r, w) in reads_from(ops):
+        _, ti, o = r
+        _, tj, _ = w
+        if tj == 0:
+            continue
+        for tk in writers.get(o, ()):
+            if tk not in (ti, tj):
+                out.add((tk, tj, ti))
+    return sorted(out)
+
+
 def seriale_view(ops):
     """Primo ordine seriale view-equivalente a S, o None (esaustivo come is_vsr)."""
     ts = transactions(ops)

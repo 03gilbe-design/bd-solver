@@ -435,6 +435,12 @@ def render_schedule(ex):
         L.append("ScrittureFinali(S) = \\{" + ", ".join(pt2_schedule.fmt_op(w) for w in fw) + "\\}\\par\n")
         vinc = pt2_schedule.vincoli_view(ops)
         L.append("$\\Rightarrow$ vincoli: " + ", ".join(f"T{a} $<$ T{b}" for a, b in vinc) + "\\par\n")
+        # vincolo "nessuno scrittore in mezzo" (omesso fino al 30/09, segnalato da Codex): se r_i legge da w_j su x,
+        # ogni altro scrittore T_k di x non puo' stare tra T_j e T_i
+        disg = pt2_schedule.vincoli_view_disgiuntivi(ops)
+        if disg:
+            L.append("e nessuno scrittore in mezzo: " + ", ".join(
+                f"T{k} $<$ T{j} oppure T{i} $<$ T{k}" for k, j, i in disg) + "\\par\n")
         ser = pt2_schedule.seriale_view(ops)
         if ser:
             L.append(f"S \\`e view-equivalente al seriale {T(ser)}: S \\textbf{{\\`e VSR}}" +
@@ -496,7 +502,7 @@ def render_costo(ex):
 
     def somma(steps, tot):
         """'totale = (a)+(b)+(c)+(d) = 750+150+150+11250 = 12.300' come il prof."""
-        voci = [(re.match(r"\(([a-e](?:-bis)?)\)", s).group(1), s.rsplit("=", 1)[1].strip())
+        voci = [(re.match(r"\(([a-e](?:-bis|-ter)?)\)", s).group(1), s.rsplit("=", 1)[1].strip())   # -ter: bug trovato da Codex 30/09
                 for s in steps if re.match(r"\([a-e]", s)]
         return ("totale = " + "+".join(f"({k})" for k, _ in voci) + " = " + "+".join(v for _, v in voci) +
                 " = " + f"{tot:,}".replace(",", "."))

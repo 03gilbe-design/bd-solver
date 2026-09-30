@@ -1,3 +1,5 @@
+**PER L'ESAME: apri AGENTS.md, blocco 'INIZIA QUI' (5 passi, un comando: `python esame.py spec.json`).**
+
 # Passaggio a Claude (chat) — Basi di Dati parte 2 (Tec+Lab, Migliorini) — stato 30/09/2026
 
 Leggi prima `AGENTS.md` (sezioni PARTE 2, TEORIA, SQL, Stile PROF, Sfida al prof) e `STRUMENTI_GOTCHA.md`.

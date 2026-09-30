@@ -11,7 +11,11 @@ c_chat = """SELECT I.titolo, I.CFU FROM INSEGNAMENTO I WHERE NOT EXISTS (
 c_b = """SELECT I.titolo, I.CFU FROM INSEGNAMENTO I WHERE I.codice NOT IN (
   SELECT L.insegnamento FROM LEZIONE L JOIN AULA A ON L.aula = A.codice WHERE A.nome LIKE 'A%')"""
 r = confronta(S, c_chat, c_b)
-assert r["uguali"], r
+assert r["uguali"], r          # qui LEZIONE.insegnamento e' chiave (mai NULL): NOT IN = NOT EXISTS
+# la trappola classica: se la colonna della sottoquery PUO' essere NULL, NOT IN restituisce niente
+S2 = "INSEGNAMENTO(codice, titolo, CFU); LEZIONE(id, insegnamento, aula); AULA(codice, nome)"
+r = confronta(S2, c_chat, c_b)
+assert not r["uguali"] and r["solo_null"], r
 # errore tipico: EXISTS senza NOT -> deve essere trovato
 r = confronta(S, c_chat, c_chat.replace("NOT EXISTS", "EXISTS"))
 assert not r["uguali"]

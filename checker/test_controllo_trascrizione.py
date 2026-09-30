@@ -40,4 +40,13 @@ p["np_outer"], p["np_inner"] = p["np_inner"], p["np_outer"]
 assert not contro_testo(scambio, TESTO)[1], "limite noto: presenza dei numeri, non il loro ruolo"
 assert due_trascrizioni(SPEC, scambio), "la doppia trascrizione deve vedere lo scambio"
 assert not due_trascrizioni(SPEC, copy.deepcopy(SPEC))
+# cose che in un esame non possono esserci
+from controllo_trascrizione import plausibile
+assert not plausibile(SPEC), plausibile(SPEC)
+imp = copy.deepcopy(SPEC)
+imp["esercizi"][0]["log"] = "B(T1), B(T2), C(T1), CK(T1,T2)"          # T1 gia' conclusa nel CK
+imp["esercizi"][3]["foglie"] = [[1, 9, 4], [12, 14]]                   # foglia non ordinata
+imp["esercizi"][2]["parametri"]["np_outer"] = 99999                     # NP > NR
+pr = plausibile(imp)
+assert any("CK(T1,T2)" in x for x in pr) and any("non crescenti" in x for x in pr) and any("NP > NR" in x for x in pr), pr
 print("TUTTI I TEST OK")

@@ -74,6 +74,68 @@ def contro_testo(spec, testo):
     return ok, err
 
 
+def plausibile(spec):
+    """Cose che in un esame NON possono esserci: se lo spec le contiene, la lettura della foto e' sbagliata
+    (o va ricostruita). Ritorna la lista dei problemi."""
+    p = []
+    for e in spec["esercizi"]:
+        ide = f"{e.get('id', '?')}) {e['tipo']}"
+        if e["tipo"] == "ripresa":
+            stato, ck = {}, 0
+            for k, a in pt2_ripresa.parse_log(e["log"]):
+                t = a[0] if a else None
+                if k == "B":
+                    if t in stato:
+                        p.append(f"{ide}: B({t}) ripetuto")
+                    stato[t] = "attiva"
+                elif k == "CK":
+                    ck += 1
+                    attive = sorted(x for x, s in stato.items() if s == "attiva")
+                    if sorted(a) != attive:
+                        p.append(f"{ide}: CK({','.join(a)}) ma le attive in quel punto sono {attive}")
+                elif stato.get(t) != "attiva":
+                    p.append(f"{ide}: {k}({','.join(a)}) su {t} non attiva (manca B o gia' conclusa)")
+                elif k in "CA":
+                    stato[t] = k
+                if k == "U" and len(a) != 4 or k in "ID" and len(a) != 3:
+                    p.append(f"{ide}: {k}({','.join(a)}) ha {len(a)} argomenti (U=4, I/D=3)")
+            if ck == 0:
+                p.append(f"{ide}: nessun CK nel log (negli esami c'e' sempre)")
+        elif e["tipo"] == "schedule":
+            ops = pt2_schedule.parse(e["schedule"])
+            ts = {t for _, t, _ in ops}
+            if not ops or len(ts) > 6 or len(ops) > 20:
+                p.append(f"{ide}: schedule anomalo ({len(ops)} azioni, {len(ts)} transazioni)")
+        elif e["tipo"] == "costo":
+            q = e["parametri"]
+            if q["np_outer"] > q["nr_outer"] or q["np_inner"] > q.get("nr_sel_inner", q["np_inner"]) * 10 ** 6:
+                p.append(f"{ide}: NP > NR (pagine piu' delle righe)")
+            if q["val_sel_outer"] > q["nr_outer"] or q["val_join_inner"] > max(q.get("nr_sel_inner", 1), 1) * 10 ** 6:
+                p.append(f"{ide}: VAL > NR")
+            if q.get("pagine_sel_inner", 0) > q["np_inner"]:
+                p.append(f"{ide}: selezione salvata in piu' pagine della tabella intera")
+            if q.get("outer_pagine_scritte", 0) > q["np_outer"]:
+                p.append(f"{ide}: selezione esterna salvata in piu' pagine della tabella intera")
+            if q.get("prof_indice") is not None and not 1 <= q["prof_indice"] <= 5:
+                p.append(f"{ide}: profondita' indice {q['prof_indice']} (negli esami 2-4)")
+        elif e["tipo"] == "btree":
+            f, fl = e["fanout"], e["foglie"]
+            chiavi = [k for x in fl for k in x]
+            if f not in (3, 4, 5, 6):
+                p.append(f"{ide}: fan-out {f} insolito")
+            if chiavi != sorted(chiavi) or len(set(chiavi)) != len(chiavi):
+                p.append(f"{ide}: chiavi delle foglie non crescenti o ripetute: {chiavi}")
+            mn = -(-(f - 1) // 2)
+            for x in fl:
+                if not mn <= len(x) <= f - 1:
+                    p.append(f"{ide}: foglia {x} fuori dai limiti {mn}..{f - 1}")
+            for o in e.get("operazioni", []):
+                if o["op"] == "insert" and o["key"] in chiavi or o["op"] == "delete" and o["key"] not in chiavi \
+                        and not any(q["key"] == o["key"] for q in e["operazioni"] if q["op"] == "insert"):
+                    p.append(f"{ide}: {o['op']} {o['key']} incoerente con le foglie")
+    return p
+
+
 def due_trascrizioni(a, b):
     """confronta SOLO i dati degli esercizi con motore, accoppiati per tipo (teoria/SQL sono testo libero)."""
     diff = []
