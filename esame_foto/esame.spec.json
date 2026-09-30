@@ -1,0 +1,85 @@
+{
+ "titolo": "Basi di Dati — Tecnologie e Laboratorio (da foto, 30/09/2026)",
+ "sottotitolo": "Facciata 1: domande a) b) c) d), esercizi e) f). Facciata 2 (ottimizzazione, B+-tree) illeggibile nelle foto: in attesa di nuove foto.",
+ "schema": "TURISTA(username, cognome, nome, data_nascita, nazionalita); ATTRAZIONE(codice, nome, descrizione, latitudine, longitudine, indirizzo, citta); PRENOTAZIONE(attrazione, turista, data_visita, ora_visita, data_prenotazione, pagato)",
+ "esercizi": [
+  {
+   "tipo": "teoria",
+   "id": "a",
+   "titolo": "Indice secondario",
+   "punti": 3,
+   "domanda": "Illustrare il concetto di indice secondario in un database relazionale, spiegando la differenza rispetto al concetto di indice primario.",
+   "risposta": [
+    "Indice secondario: è una struttura di accesso ausiliaria definita su un attributo (chiave di ricerca) DIVERSO da quello secondo cui il file dati è fisicamente ordinato. Ogni voce è una coppia (valore v, puntatore p): p non porta direttamente alla tupla ma a un bucket di puntatori, uno per ogni tupla che ha valore v, perché quelle tuple possono stare in pagine diverse e non contigue del file.",
+    "Siccome il file non è ordinato sulla chiave di ricerca, l'indice secondario è sempre DENSO: deve contenere tutti i valori presenti, altrimenti non si potrebbe dedurre dove stanno gli altri. Su una tabella se ne possono creare quanti se ne vogliono.",
+    "Ricerca del valore K: si trova K nell'indice, si segue il puntatore al bucket e da lì si legge una pagina dati per ciascun puntatore del bucket.",
+    "Differenza con l'indice primario: il primario usa come chiave di ricerca proprio la chiave di ordinamento del file (tabella ordinata su quell'attributo), quindi può essere anche SPARSO (una voce per blocco, col valore minimo) e le tuple con lo stesso valore sono contigue: trovata la prima, si prosegue in avanti. Per tabella esiste al più un indice primario, i secondari possono essere molti; a parità di tuple cercate il secondario costa di più, perché ogni puntatore può richiedere l'accesso a una pagina diversa."
+   ],
+   "risposta_minimal": [
+    "Indice secondario: la sua chiave di ricerca è un attributo diverso da quello su cui il file è ordinato. Voce = (valore v, puntatore a un bucket che raccoglie i puntatori alle tuple con valore v, sparse su pagine diverse). È sempre DENSO; se ne possono avere molti.",
+    "Ricerca di K: trovo K nell'indice, seguo il puntatore al bucket, poi leggo una pagina dati per ogni puntatore del bucket.",
+    "Primario: costruito proprio sull'attributo per cui il file è ordinato, quindi può essere denso o SPARSO (una voce per blocco) e le tuple uguali stanno vicine. Al più uno per tabella; su molte tuple il secondario costa di più."
+   ]
+  },
+  {
+   "tipo": "teoria",
+   "id": "b",
+   "titolo": "Aggiornamento fantasma",
+   "punti": 3,
+   "domanda": "Illustrare l'anomalia di concorrenza denominata \"aggiornamento fantasma\" anche mediante l'utilizzo di un esempio. Indicare quale livello di isolamento è necessario per evitarla.",
+   "risposta": [
+    "Anomalia: una transazione osserva uno stato intermedio della base di dati che non rispetta un vincolo di integrità, perché legge alcuni dati prima e altri dopo le modifiche di un'altra transazione, che di per sé è corretta.",
+    "Esempio: vincolo x + y = 100, inizialmente x = 50 e y = 50. T1 calcola la somma; T2 sposta 10 da x a y.",
+    "- r1(x): T1 legge x = 50",
+    "- r2(x), r2(y), w2(x) con x = 40, w2(y) con y = 60, commit di T2",
+    "- r1(y): T1 legge y = 60 e ottiene x + y = 110",
+    "T1 vede una somma che non è mai esistita in nessuno stato consistente: lo schedule r1(x) r2(x) r2(y) w2(x) w2(y) r1(y) non è serializzabile (né VSR né CSR).",
+    "Livelli di isolamento SQL: read uncommitted evita solo la perdita di aggiornamento; read committed evita anche la lettura sporca; repeatable read evita anche la lettura inconsistente e l'aggiornamento fantasma; serializable evita inoltre l'inserimento fantasma. Serve quindi almeno REPEATABLE READ (o SERIALIZABLE): i lock condivisi in lettura tenuti fino alla fine (2PL stretto) impediscono a T2 di scrivere x mentre T1 non ha terminato."
+   ],
+   "risposta_minimal": [
+    "Una transazione legge uno stato intermedio che viola un vincolo di integrità: legge parte dei dati prima e parte dopo gli aggiornamenti di un'altra transazione corretta.",
+    "Esempio con vincolo x + y = 100 (x = y = 50): r1(x) legge 50; T2 fa x = 40, y = 60 e commit; r1(y) legge 60: T1 vede 110.",
+    "Read uncommitted evita la perdita di aggiornamento, read committed la lettura sporca, repeatable read anche lettura inconsistente e aggiornamento fantasma, serializable anche l'inserimento fantasma: serve almeno REPEATABLE READ."
+   ]
+  },
+  {
+   "tipo": "sql",
+   "id": "c",
+   "titolo": "Query SQL",
+   "punti": 4,
+   "schema": "TURISTA(username, cognome, nome, data_nascita, nazionalita); ATTRAZIONE(codice, nome, descrizione, latitudine, longitudine, indirizzo, citta); PRENOTAZIONE(attrazione, turista, data_visita, ora_visita, data_prenotazione, pagato)",
+   "domanda": "Scrivere una query SQL che determini il numero di turisti distinti che nel 2026 hanno effettuato almeno una prenotazione per un'attrazione situata in una città nella quale non avevano effettuato alcuna prenotazione nel 2025.",
+   "query": "SELECT COUNT(DISTINCT P.turista)\nFROM PRENOTAZIONE P JOIN ATTRAZIONE A ON P.attrazione = A.codice\nWHERE EXTRACT(YEAR FROM P.data_prenotazione) = 2026\n  AND NOT EXISTS (SELECT *\n                  FROM PRENOTAZIONE P2 JOIN ATTRAZIONE A2 ON P2.attrazione = A2.codice\n                  WHERE P2.turista = P.turista AND A2.citta = A.citta\n                    AND EXTRACT(YEAR FROM P2.data_prenotazione) = 2025);",
+   "query2": "SELECT COUNT(DISTINCT X.turista)\nFROM (SELECT P.turista, A.citta\n      FROM PRENOTAZIONE P JOIN ATTRAZIONE A ON P.attrazione = A.codice\n      WHERE EXTRACT(YEAR FROM P.data_prenotazione) = 2026\n      EXCEPT\n      SELECT P.turista, A.citta\n      FROM PRENOTAZIONE P JOIN ATTRAZIONE A ON P.attrazione = A.codice\n      WHERE EXTRACT(YEAR FROM P.data_prenotazione) = 2025) AS X;",
+   "note": [
+    "Anno della prenotazione = anno di data_prenotazione (\"hanno effettuato una prenotazione nel 2026\")."
+   ]
+  },
+  {
+   "tipo": "sql",
+   "id": "d",
+   "titolo": "Query SQL",
+   "punti": 4,
+   "schema": "TURISTA(username, cognome, nome, data_nascita, nazionalita); ATTRAZIONE(codice, nome, descrizione, latitudine, longitudine, indirizzo, citta); PRENOTAZIONE(attrazione, turista, data_visita, ora_visita, data_prenotazione, pagato)",
+   "domanda": "Scrivere una query SQL che restituisca il nome delle attrazioni per le quali il numero di prenotazioni effettuate nel 2025 risulta strettamente maggiore del massimo numero annuale di prenotazioni ricevute dalla medesima attrazione negli anni precedenti al 2025.",
+   "query": "CREATE VIEW PREN_ANNO AS (\n  SELECT attrazione, EXTRACT(YEAR FROM data_prenotazione) AS anno, COUNT(*) AS num\n  FROM PRENOTAZIONE\n  GROUP BY attrazione, EXTRACT(YEAR FROM data_prenotazione));\n\nSELECT A.nome\nFROM ATTRAZIONE A JOIN PREN_ANNO V ON V.attrazione = A.codice\nWHERE V.anno = 2025\n  AND V.num > (SELECT COALESCE(MAX(V2.num), 0) FROM PREN_ANNO V2\n               WHERE V2.attrazione = V.attrazione AND V2.anno < 2025);",
+   "query2": "CREATE VIEW PREN_ANNO2 AS (\n  SELECT attrazione, EXTRACT(YEAR FROM data_prenotazione) AS anno, COUNT(*) AS num\n  FROM PRENOTAZIONE\n  GROUP BY attrazione, EXTRACT(YEAR FROM data_prenotazione));\n\nSELECT A.nome\nFROM ATTRAZIONE A JOIN PREN_ANNO2 V ON V.attrazione = A.codice\nWHERE V.anno = 2025\n  AND NOT EXISTS (SELECT * FROM PREN_ANNO2 V2\n                  WHERE V2.attrazione = V.attrazione AND V2.anno < 2025\n                    AND V2.num >= V.num);",
+   "note": [
+    "Se un'attrazione non ha prenotazioni negli anni precedenti il massimo vale 0 (COALESCE): basta una prenotazione nel 2025."
+   ]
+  },
+  {
+   "tipo": "ripresa",
+   "id": "e",
+   "titolo": "Gestore dell'affidabilità",
+   "punti": 3,
+   "log": "B(T1), B(T2), U(T1,O1,B1,A1), I(T2,O2,A2), B(T3), U(T2,O3,B3,A3), B(T4), U(T3,O1,B4,A4), A(T1), CK(T2,T3,T4), U(T4,O4,B5,A5), C(T2), B(T5), D(T3,O5,B6), U(T5,O2,B7,A7), C(T4), A(T5), I(T3,O6,A8), C(T3)"
+  },
+  {
+   "tipo": "schedule",
+   "id": "f",
+   "titolo": "Esecuzione concorrente",
+   "schedule": "r2(y), w3(z), r2(x), w2(y), w3(t), r3(y), w3(x), r1(x), r1(y), w0(x), w1(t), w1(z)"
+  }
+ ]
+}
