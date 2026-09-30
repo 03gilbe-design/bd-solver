@@ -1,6 +1,6 @@
 {
  "titolo": "Basi di Dati — Tecnologie e Laboratorio (da foto, 30/09/2026)",
- "sottotitolo": "Esame completo: a) b) c) d) e) f) g) h). B+-tree: prima chiave della 3a foglia coperta nella foto, ricostruita (23) dalla stessa figura del 12/06/2025.",
+ "sottotitolo": "Esame completo: a) b) c) d) e) f) g) h). Testo letto dalle foto (foglie B+-tree confermate dalla foto nitida).",
  "schema": "TURISTA(username, cognome, nome, data_nascita, nazionalita); ATTRAZIONE(codice, nome, descrizione, latitudine, longitudine, indirizzo, citta); PRENOTAZIONE(attrazione, turista, data_visita, ora_visita, data_prenotazione, pagato)",
  "esercizi": [
   {
