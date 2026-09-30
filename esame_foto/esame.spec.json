@@ -1,6 +1,6 @@
 {
- "titolo": "Basi di Dati — Tecnologie e Laboratorio (da foto, 30/09/2026)",
- "sottotitolo": "Esame completo: a) b) c) d) e) f) g) h). Testo letto dalle foto (foglie B+-tree confermate dalla foto nitida).",
+ "titolo": "Basi di Dati — Modulo Tecnologie e Laboratorio, prova del 30 settembre 2026",
+ "sottotitolo": "Esame completo: a) b) c) d) e) f) g) h). Testo verificato sulle foto nitide.",
  "schema": "TURISTA(username, cognome, nome, data_nascita, nazionalita); ATTRAZIONE(codice, nome, descrizione, latitudine, longitudine, indirizzo, citta); PRENOTAZIONE(attrazione, turista, data_visita, ora_visita, data_prenotazione, pagato)",
  "esercizi": [
   {
@@ -79,7 +79,8 @@
    "tipo": "schedule",
    "id": "f",
    "titolo": "Esecuzione concorrente",
-   "schedule": "r2(y), w3(z), r2(x), w2(y), w3(t), r3(y), w3(x), r1(x), r1(y), w0(x), w1(t), w1(z)"
+   "schedule": "r2(y), w3(z), r2(x), w2(y), w3(t), r3(y), w3(x), r1(x), r1(y), w0(x), w1(t), w1(z)",
+   "punti": 6
   },
   {
    "tipo": "costo",
