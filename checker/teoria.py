@@ -114,7 +114,7 @@ if __name__ == '__main__':
         radici = {w[:6] for w in re.findall(r"[a-z+\-]{5,}", norm(dom)) if w not in _VUOTE}
         if not trovate or trovate[0][0] * 2 < len(radici):
             print('ATTENZIONE: le slide coprono meno della meta\' delle parole della domanda. O e\' fuori programma,')
-            print('o manca una slide (es. Moodle "Transazioni e architettura di un DBMS"). Non inventare: dillo.')
+            print('o il prof non ha slide su questo (es. la ripresa: su Moodle 2026 solo esercizi risolti, teoria negli appunti). Non inventare: dillo.')
         if trovate and all(f.startswith('APPUNTI') for _, f, _, _ in trovate):
             print('ATTENZIONE: trovato SOLO negli appunti, non nelle slide ufficiali: verifica prima di fidarti.')
         sys.exit(2)
