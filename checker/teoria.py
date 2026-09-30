@@ -42,6 +42,27 @@ def riconosci(domanda):
     return best, [v for v in best['varianti'] if norm(v) in q]
 
 
+_VUOTE = set("illustrare illustri descrivere descriva presenti presentare studente indicare indichi "
+              "inoltre quali quale dettaglio particolare seguenti punti esempio mostrando utilizzo "
+              "struttura modulo ciascuna ciascuno essere della delle degli dalla dello nella nelle".split())
+
+
+def cerca_slide(domanda, n=3):
+    """Domanda MAI vista: dove rispondere? Nelle slide del prof (riferimenti_teoria/slide/, una pagina per
+    \\f), non a memoria ne' su Wikipedia. Punteggio = radici (6 lettere) della domanda presenti nella pagina."""
+    radici = {w[:6] for w in re.findall(r"[a-z+\-]{5,}", norm(domanda)) if w not in _VUOTE}
+    ris = []
+    for f in sorted(glob.glob(os.path.join(RIF, 'slide', '*.txt'))):
+        for p, testo in enumerate(open(f, encoding='utf-8', errors='replace').read().split('\f'), 1):
+            t = norm(testo)
+            hit = {r for r in radici if r in t}
+            if hit:
+                righe = [l.strip() for l in testo.splitlines() if any(r in norm(l) for r in hit) and len(l.strip()) > 3]
+                ris.append((len(hit), os.path.basename(f)[:-4], p, righe[:3]))
+    ris.sort(key=lambda x: (-x[0], x[1].startswith('APPUNTI')))   # a pari punteggio prima le slide del prof
+    return ris[:n]
+
+
 def punti_richiesti(m, varianti):
     return m['punti'] + [p for v in varianti for p in m['varianti'][v]]
 
@@ -83,10 +104,26 @@ if __name__ == '__main__':
         sys.exit(0 if v['ok'] else 1)
     m, var = riconosci(dom)
     if not m:
-        sys.exit('NON RICONOSCIUTA: scrivi da slide, poi aggiungi il modello a banca_teoria.json')
+        print('NON RICONOSCIUTA -> NON inventare, NON Wikipedia: rispondi da queste pagine delle slide del prof')
+        print('(APPUNTI_jeans = appunti tuoi, fonte secondaria). Poi aggiungi il modello a banca_teoria.json.')
+        trovate = cerca_slide(dom)
+        for k, f, p, righe in trovate:
+            print(f'  [{k} parole] {f}  pag. {p}')
+            for r in righe:
+                print('      ' + r[:110])
+        radici = {w[:6] for w in re.findall(r"[a-z+\-]{5,}", norm(dom)) if w not in _VUOTE}
+        if not trovate or trovate[0][0] * 2 < len(radici):
+            print('ATTENZIONE: le slide coprono meno della meta\' delle parole della domanda. O e\' fuori programma,')
+            print('o manca una slide (es. Moodle "Transazioni e architettura di un DBMS"). Non inventare: dillo.')
+        if trovate and all(f.startswith('APPUNTI') for _, f, _, _ in trovate):
+            print('ATTENZIONE: trovato SOLO negli appunti, non nelle slide ufficiali: verifica prima di fidarti.')
+        sys.exit(2)
     print(f"MODELLO: {m['id']} - {m['titolo']}   varianti: {var or '-'}")
     print(f"LUNGHEZZA: {PAROLE_PER_PUNTO[0]*pt}-{PAROLE_PER_PUNTO[1]*pt} parole ({pt} punti)")
     print('DEVE TOCCARE:')
     for p in punti_richiesti(m, var):
         print('  -', ' / '.join(p))
     print('Scrivi con parole tue: >%d sequenze di %d parole uguali alle fonti = bocciata.' % (MAX_NGRAM_COPIATI, NGRAM))
+    print('DOVE STA NELLE SLIDE (controlla che la domanda non chieda altro rispetto ai punti):')
+    for k, f, p, _ in cerca_slide(dom):
+        print(f'  [{k} parole] {f}  pag. {p}')

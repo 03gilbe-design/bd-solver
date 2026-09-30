@@ -36,7 +36,7 @@
    "varianti": {"csr": [["csr"], ["contenut", "sottoinsieme", "inclus", "implica"]],
                 "dimostr": [["dimostr"]]}},
   {"id": "2pl", "titolo": "Locking a due fasi (2PL) / 2PL stretto",
-   "chiavi": ["2pl", "due fasi", "lock"],
+   "chiavi": ["2pl", "due fasi", "locking a due"],
    "punti": [["lock condiviso", "r_lock", "lock in lettura", "shared"], ["lock esclusivo", "w_lock", "lock in scrittura", "exclusive"],
              ["tabella dei conflitti", "compatibil"], ["unlock", "rilascia"], ["fase crescente", "prima fase", "acquisi"],
              ["fase calante", "seconda fase", "decrescente"], ["csr"]],
