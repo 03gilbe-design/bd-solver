@@ -276,6 +276,31 @@ def perche_non_2pl(ops):
     return "nessuna assegnazione di lock a due fasi e' compatibile con S"
 
 
+def is_2pl_primo_uso(ops):
+    """Lettura ALTERNATIVA (lock presi solo alla prima azione, rilasciati appena possibile).
+    Non e' la regola della slide 8 pag.9, ma un revisore (Gemini, 30/09) l'ha letta cosi': quando le
+    due letture differiscono il PDF le mostra entrambe. Lock di T su o tenuto da prima azione su o a
+    max(ultima azione su o, lock point = ultima prima-acquisizione di T); conflitto se due intervalli
+    si sovrappongono e uno dei due e' esclusivo."""
+    ts = transactions(ops)
+    iv = {}
+    for t in ts:
+        first = {}
+        for i, (a, tt, o) in enumerate(ops):
+            if tt == t:
+                first.setdefault(o, i)
+        iv[t] = _intervalli(ops, t, max(first.values()) + 0.5 + t / 1000)
+    for a in ts:
+        for b in ts:
+            if a < b:
+                for o in iv[a].keys() & iv[b].keys():
+                    sa, xa, ea = iv[a][o]
+                    sb, xb, eb = iv[b][o]
+                    if xa is not None and xa < eb and sb < ea or xb is not None and xb < ea and sa < eb:
+                        return False
+    return True
+
+
 def is_2pl(ops):
     """2PL sse esiste un'assegnazione di lock/unlock a due fasi compatibile con S (lock
     anticipabili). Prima (fino al 30/09/2026) il test era 'lock al primo uso', che dava falsi

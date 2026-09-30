@@ -23,7 +23,8 @@
     "pagine_sel_inner": 250,
     "nr_sel_inner": 8000,
     "val_join_inner": 1600
-   }
+   },
+   "nota": "GAP: il punto (2) chiede un indice B+-tree di profondita 2 su COLLEGIO.Regione (selezione sull ESTERNA, non attributo di join): pt2_costo non lo modella, calcolare a mano: costo selezione = profondita + pagine con Regione=Veneto"
   },
   {
    "tipo": "btree",

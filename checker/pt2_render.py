@@ -453,6 +453,11 @@ def render_schedule(ex):
                  "{\\raggedright\\small\\texttt{" + esc(pt2_schedule.sequenza_lock(ops, lp)) + "}\\par}\n")
         L.append(note("Le azioni restano nello stesso ordine; nessun lock esclusivo coesiste con un altro lock "
                       "sullo stesso oggetto."))
+        if not pt2_schedule.is_2pl_primo_uso(ops):   # le due letture della slide differiscono: le mostro entrambe
+            L.append(par("Nota: questo vale ammettendo lock acquisiti in anticipo (slide: conta solo che "
+                         "dopo un rilascio non si acquisiscano altri lock). Se invece ogni lock si prende solo "
+                         "alla prima azione sull'oggetto, S NON sarebbe 2PL: una transazione dovrebbe "
+                         "acquisire un lock dopo averne gia' ceduto uno."))
     else:
         L.append("\\textbf{2PL:} no: " + esc(motivo) + ".\\par\n")
     cls = pt2_schedule.classify(S)

@@ -344,3 +344,5 @@ Il prof SBAGLIA (12 errori dimostrati su 15 controlli: refusi ripresa, aritmetic
 motore non coincide col prof, NON correggere il motore per farlo coincidere; lancia l'audit e ragiona.
 `pt2_costo.solve(selezione_diverso=True)` per `WHERE A <> v` (NR - NR/VAL, confermato da EsempioOttimizzazione.png).
 Errori degli strumenti e come prevenirli: `STRUMENTI_GOTCHA.md`.
+
+- GAP noto (30/09): indice sull'attributo di SELEZIONE dell'esterna (es. 10/06/2022, COLLEGIO.Regione) non modellato da pt2_costo: a mano. Spec dei 4 esami del test (2015_06, 2022_04_21_B, 2022_06_10, 2026_06_15) verificati contro il testo il 30/09.
