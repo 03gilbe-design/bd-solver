@@ -1,0 +1,67 @@
+{
+ "titolo": "Basi di Dati - III Prova in itinere del 10 giugno 2022",
+ "sottotitolo": "Esecuzione concorrente / Ottimizzazione (solo punto 1: l'indice e' sull'ESTERNA, non gestito) / B+-tree (delete 11 omesso: 11 non e' nell'albero)",
+ "esercizi": [
+  {
+   "tipo": "schedule",
+   "id": "e",
+   "titolo": "Esecuzione concorrente",
+   "punti": 6,
+   "schedule": "r2(y), w3(z), r2(x), w1(z), w2(y), w3(t), r3(y), w3(x), r1(x), r1(y), w0(x), w1(t)"
+  },
+  {
+   "tipo": "costo",
+   "id": "f",
+   "titolo": "Ottimizzazione (costo query)",
+   "punti": 3,
+   "descrizione": "Ordine join: COLLEGIO $\\bowtie$ VOTO (Nested Loop Join, 1 pagina di buffer per tabella). Selezione VOTO: 8000 righe in 250 pagine; selezione COLLEGIO nel buffer.",
+   "parametri": {
+    "np_outer": 200,
+    "nr_outer": 1600,
+    "val_sel_outer": 20,
+    "np_inner": 850,
+    "pagine_sel_inner": 250,
+    "nr_sel_inner": 8000,
+    "val_join_inner": 1600
+   }
+  },
+  {
+   "tipo": "btree",
+   "id": "g",
+   "titolo": "B$^+$-tree (fan-out 5)",
+   "punti": 7,
+   "fanout": 5,
+   "foglie": [
+    [
+     3,
+     8,
+     10,
+     12
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     21,
+     23,
+     24
+    ],
+    [
+     25,
+     26
+    ],
+    [
+     28,
+     29
+    ]
+   ],
+   "operazioni": [
+    {
+     "op": "delete",
+     "key": 26
+    }
+   ]
+  }
+ ]
+}

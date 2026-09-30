@@ -1,0 +1,83 @@
+{
+ "titolo": "Basi di Dati - Modulo Tecnologie e Laboratorio, prova del 15 giugno 2026",
+ "sottotitolo": "Esercizi e) f) g) h) dai motori deterministici pt2_* (stesso testo dell'esame reale del 14/09/2026)",
+ "esercizi": [
+  {
+   "tipo": "ripresa",
+   "id": "e",
+   "titolo": "Gestore dell'affidabilità (ripresa a caldo)",
+   "punti": 3,
+   "log": "DUMP, B(T1), B(T2), B(T3), I(T1,O1,A1), D(T2,O2,B2), B(T4), U(T4,O3,B3,A3), U(T1,O4,B4,A4), C(T3), CK(T1,T2,T4), B(T5), C(T4), U(T5,O5,B5,A5), B(T6), C(T2), U(T6,O6,B6,A6), U(T6,O3,B7,A7), A(T6)"
+  },
+  {
+   "tipo": "schedule",
+   "id": "f",
+   "titolo": "Esecuzione concorrente",
+   "punti": 6,
+   "schedule": "r2(y), w2(z), w2(x), w1(z), w2(y), w2(s), r3(y), r3(x), r1(x), r1(y), w3(x), w1(s)"
+  },
+  {
+   "tipo": "costo",
+   "id": "g",
+   "titolo": "Ottimizzazione (costo query)",
+   "punti": 5,
+   "descrizione": "Ordine join: PAZIENTE $\\bowtie$ VISITA (Nested Loop Join, 1 pagina di buffer per tabella). Selezione P.Regione <> 'Lombardia': NR sel = NR - NR/VAL; risultato salvato in 100 pagine. VISITA senza filtro.",
+   "parametri": {
+    "np_outer": 130,
+    "nr_outer": 12500,
+    "val_sel_outer": 20,
+    "np_inner": 2000,
+    "pagine_sel_inner": 2000,
+    "nr_sel_inner": 250000,
+    "val_join_inner": 12500,
+    "prof_indice": 3,
+    "interna_selezionata": false,
+    "outer_pagine_scritte": 100,
+    "selezione_diverso": true
+   }
+  },
+  {
+   "tipo": "btree",
+   "id": "h",
+   "titolo": "B$^+$-tree (fan-out 5)",
+   "punti": 5,
+   "fanout": 5,
+   "foglie": [
+    [
+     1,
+     4,
+     9
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     18,
+     20,
+     21,
+     23
+    ],
+    [
+     24,
+     25
+    ],
+    [
+     26,
+     28,
+     30
+    ]
+   ],
+   "operazioni": [
+    {
+     "op": "insert",
+     "key": 22
+    },
+    {
+     "op": "delete",
+     "key": 24
+    }
+   ]
+  }
+ ]
+}

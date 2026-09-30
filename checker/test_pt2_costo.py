@@ -46,6 +46,14 @@ assert r["nr_sel_esterna"] == 900
 assert r["totale"] == 140 + 900 * 2100 == 1890140, r["totale"]
 assert r["totale_indice"] == 140 + 900 * (3 + 20) == 20840, r["totale_indice"]
 
+# Esame 15/06/2026 (= 14/09): selezione "<>" sull'ESTERNA scritta in 100 pagine, interna senza filtro.
+# costo = NP(PAZIENTE) + scrittura 100 + rilettura 100 nel JOIN + NR_sel * NP(VISITA)
+r2 = pc.solve(130, 12500, 20, 2000, 2000, 250000, 12500, prof_indice=3,
+              interna_selezionata=False, outer_pagine_scritte=100, selezione_diverso=True)
+assert r2["nr_sel_esterna"] == 12500 - 625 == 11875
+assert r2["totale"] == 130 + 100 + 100 + 11875 * 2000 == 23750330, r2["totale"]
+assert r2["totale_indice"] == 330 + 11875 * (3 + 20) == 273455, r2["totale_indice"]
+
 for s in r["steps"] + r["steps_indice"][3:]:
     print(s)
 print("TUTTI I TEST OK")

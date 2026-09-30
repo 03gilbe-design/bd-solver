@@ -1,0 +1,82 @@
+{
+ "titolo": "Basi di Dati - III Prova in itinere del 22 aprile 2022 (B)",
+ "sottotitolo": "S1 e S2 come due esercizi separati (il renderer risponde sempre VSR+CSR+2PL per entrambi)",
+ "esercizi": [
+  {
+   "tipo": "schedule",
+   "id": "e",
+   "titolo": "Esecuzione concorrente - S1",
+   "punti": 3,
+   "schedule": "r1(x), r1(y), w2(x), r3(t), w1(t)"
+  },
+  {
+   "tipo": "schedule",
+   "id": "f",
+   "titolo": "Esecuzione concorrente - S2",
+   "punti": 3,
+   "schedule": "r4(y), r5(x), w6(z), w5(y), w4(z), r6(y), w6(x)"
+  },
+  {
+   "tipo": "costo",
+   "id": "g",
+   "titolo": "Ottimizzazione (costo query)",
+   "punti": 6,
+   "descrizione": "Ordine join: MEDICO $\\bowtie$ VISITA (Nested Loop Join, 1 pagina di buffer per tabella). Selezione MEDICO nel buffer; VISITA senza filtro.",
+   "parametri": {
+    "np_outer": 14,
+    "nr_outer": 1400,
+    "val_sel_outer": 14,
+    "np_inner": 2100,
+    "pagine_sel_inner": 2100,
+    "nr_sel_inner": 270000,
+    "val_join_inner": 9000,
+    "prof_indice": 2,
+    "interna_selezionata": false
+   }
+  },
+  {
+   "tipo": "btree",
+   "id": "h",
+   "titolo": "B$^+$-tree (fan-out 5)",
+   "punti": 7,
+   "fanout": 5,
+   "foglie": [
+    [
+     "A",
+     "D",
+     "E",
+     "G"
+    ],
+    [
+     "H",
+     "I"
+    ],
+    [
+     "L",
+     "M",
+     "O"
+    ],
+    [
+     "P",
+     "R"
+    ],
+    [
+     "S",
+     "T",
+     "U",
+     "Z"
+    ]
+   ],
+   "operazioni": [
+    {
+     "op": "insert",
+     "key": "W"
+    },
+    {
+     "op": "delete",
+     "key": "R"
+    }
+   ]
+  }
+ ]
+}

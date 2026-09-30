@@ -96,6 +96,12 @@ def solve(np_outer, nr_outer, val_sel_outer,
     if outer_pagine_scritte:
         pre += outer_pagine_scritte
         steps.append(f"(c-bis) scrittura selezione esterna = {outer_pagine_scritte}")
+        # fix 30/09/2026 (agente di test su esame 15/06/2026): il JOIN rilegge la selezione scritta:
+        # e' il termine NP(R) della formula NLJ NP(R) + NR(R)*NP(S). Prova dalle soluzioni del prof
+        # (lesson_12_03, Ott.1 e Ott.2): scrive "JOIN = 0 + NR..*NP.." / "NP(COMUNE) + ... = 0 + ..":
+        # NP(R) vale 0 SOLO perche' la selezione e' "mantenuta nel buffer"; salvata su disco -> si rilegge.
+        pre += outer_pagine_scritte
+        steps.append(f"(c-ter) lettura selezione esterna nel JOIN = {outer_pagine_scritte}")
     ns = nr_sel(nr_outer, val_sel_outer)
     if selezione_diverso:
         ns = nr_outer - ns

@@ -51,4 +51,6 @@ assert ps.conflicts(ops5) == [
 assert ps.is_csr(ops5) is True
 assert ps.is_2pl(ops5) is False
 
+# lock anticipato (30/09/2026): T1 prende y prima di rilasciare x -> 2PL
+assert ps.is_2pl(ps.parse("r1(x), w2(x), r1(y)"))
 print("TUTTI I TEST OK")

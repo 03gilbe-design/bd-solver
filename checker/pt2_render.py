@@ -427,10 +427,8 @@ def render_schedule(ex):
         L.append("\\textbf{CSR:} poich\\'e il grafo \\`e aciclico, S \\textbf{\\`e CSR} "
                  f"(seriale equivalente: {T(top)}).\\par\\smallskip\n")
     # VSR giustificato: LeggeDa + ScrittureFinali -> vincoli -> seriale (o nessuno)
-    if not cyc:
-        L.append("\\textbf{VSR:} S \\`e CSR e CSR $\\subseteq$ VSR, quindi S \\textbf{\\`e VSR}.\\par\\smallskip\n")
-    else:
-        rf = sorted(pt2_schedule.reads_from(ops), key=lambda p: ops.index(p[0]) if p[0] in ops else 0)
+    if True:   # VSR sempre giustificato con LeggeDa + ScrittureFinali (esami dal 2022: "giustificare")
+        rf =sorted(pt2_schedule.reads_from(ops), key=lambda p: ops.index(p[0]) if p[0] in ops else 0)
         fr = lambda p: f"({pt2_schedule.fmt_op(p[0])}, " + ("iniziale" if p[1][1] == 0 else pt2_schedule.fmt_op(p[1])) + ")"
         fw = sorted(pt2_schedule.final_writes(ops), key=lambda w: w[2])
         L.append("\\textbf{VSR:} LeggeDa(S) = \\{" + ", ".join(fr(p) for p in rf) + "\\}\\par\n")
@@ -439,14 +437,24 @@ def render_schedule(ex):
         L.append("$\\Rightarrow$ vincoli: " + ", ".join(f"T{a} $<$ T{b}" for a, b in vinc) + "\\par\n")
         ser = pt2_schedule.seriale_view(ops)
         if ser:
-            L.append(f"S \\`e view-equivalente al seriale {T(ser)}: S \\textbf{{\\`e VSR}}.\\par\\smallskip\n")
+            L.append(f"S \\`e view-equivalente al seriale {T(ser)}: S \\textbf{{\\`e VSR}}" +
+                     (" (coerente con CSR $\\subseteq$ VSR)" if not cyc else "") + ".\\par\\smallskip\n")
         else:
             opp = next(((a, b) for a, b in vinc if (b, a) in vinc), None)
             perche = (f"T{opp[0]} $<$ T{opp[1]} e T{opp[1]} $<$ T{opp[0]} si contraddicono"
                       if opp else "nessun ordine seriale rispetta tutti i vincoli")
             L.append(perche + ": S \\textbf{non \\`e VSR} (nonSR).\\par\\smallskip\n")
     motivo = pt2_schedule.perche_non_2pl(ops)
-    L.append("\\textbf{2PL:} " + ("s\\`i, \\`e 2PL." if motivo is None else "no: " + esc(motivo) + ".") + "\\par\n")
+    if motivo is None:   # testimone: lock/unlock a due fasi compatibili con S (lock anche anticipati)
+        lp = pt2_schedule.lock_2pl(ops)
+        L.append("\\textbf{2PL:} s\\`i: esiste un'assegnazione di lock a due fasi compatibile con S "
+                 "(ogni transazione acquisisce tutti i suoi lock, se serve in anticipo, prima di rilasciarne "
+                 "uno; sl = lock condiviso, xl = esclusivo, u = rilascio):\\par\n"
+                 "{\\raggedright\\small\\texttt{" + esc(pt2_schedule.sequenza_lock(ops, lp)) + "}\\par}\n")
+        L.append(note("Le azioni restano nello stesso ordine; nessun lock esclusivo coesiste con un altro lock "
+                      "sullo stesso oggetto."))
+    else:
+        L.append("\\textbf{2PL:} no: " + esc(motivo) + ".\\par\n")
     cls = pt2_schedule.classify(S)
     L.append(f"\\textbf{{Esito: S \\`e {cls}}}.\\par\n")
     return "".join(L)
@@ -464,11 +472,21 @@ def render_costo(ex):
     est, inn = (m.group(1), m.group(2)) if m else ("esterna", "interna")
     nomi = lambda s: (s.replace("NR_sel_esterna", f"NR({est} sel)").replace("NP_sel_interna", f"NP({inn} sel)")
                        .replace("interna", inn).replace("esterna", est).replace(" = NP = ", " = NP = "))
-    L.append(formula(f"Formula NLJ ({est} esterna, {inn} interna): costo = NP({inn}) + scrittura selezione {inn} + "
-                     f"NP({est}) + $NR({est}_{{sel}}) \\times NP({inn}_{{sel}})$."))
+    sel_inn = p.get("interna_selezionata", True)
+    termini = ([f"NP({inn})", f"scrittura selezione {inn}"] if sel_inn else []) + [f"NP({est})"]
+    if p.get("outer_pagine_scritte"):
+        termini += [f"scrittura selezione {est}", f"rilettura selezione {est} nel JOIN"]
+    np_inn = f"NP({inn}_{{sel}})" if sel_inn else f"NP({inn})"
+    L.append(formula(f"Formula NLJ ({est} esterna, {inn} interna): costo = " + " + ".join(termini) +
+                     f" + $NR({est}_{{sel}}) \\times {np_inn}$."))
     for s in rc["steps"]:
         if s.startswith("(d)"):   # come il prof: da dove viene NR selezionato (es. 1200/25)
-            L.append(par(f"NR({est} sel) = NR({est}) / VAL = {p['nr_outer']} / {p['val_sel_outer']} = {rc['nr_sel_esterna']:g}"))
+            nr, val = p["nr_outer"], p["val_sel_outer"]
+            if p.get("selezione_diverso"):   # WHERE A <> v: complemento dell'uguaglianza
+                L.append(par(f"NR({est} sel) = NR({est}) - NR({est}) / VAL = {nr} - {nr} / {val} = "
+                             f"{nr} - {pt2_costo.nr_sel(nr, val):g} = {rc['nr_sel_esterna']:g} (selezione con <>)"))
+            else:
+                L.append(par(f"NR({est} sel) = NR({est}) / VAL = {nr} / {val} = {rc['nr_sel_esterna']:g}"))
         L.append(par(nomi(s)))
 
     def somma(steps, tot):
@@ -612,8 +630,17 @@ def render_teoria(ex):
     return "".join(L)
 
 
+def render_sql(ex):
+    """Query SQL (domande c/d): testo + query in verbatim (controllata prima con sql_check.py)
+    + eventuali note ('note': lista di frasi)."""
+    L = [_titolo(ex), "\\textit{" + esc(ex["domanda"]) + "}\\par\\medskip\n", SOL,
+         "\\begin{verbatim}\n" + ex["query"].rstrip() + "\n\\end{verbatim}\n"]
+    L += [note(esc(n)) for n in ex.get("note", [])]
+    return "".join(L)
+
+
 RENDERERS = {"ripresa": render_ripresa, "schedule": render_schedule,
-             "costo": render_costo, "btree": render_btree, "teoria": render_teoria}
+             "costo": render_costo, "btree": render_btree, "teoria": render_teoria, "sql": render_sql}
 
 def render_esercizio(ex):
     """Testo d'esame (titolo + dati) normale, risposta nel riquadro 'soluzione' (blu, barra).

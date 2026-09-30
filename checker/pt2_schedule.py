@@ -191,10 +191,74 @@ def seriale_view(ops):
     return None
 
 
+def _intervalli(ops, t, p):
+    """lock di T con lock point p: per oggetto -> (inizio S, inizio X o None, fine).
+    Acquisizione al primo uso o prima (anticipata fino a p), rilascio all'ultimo uso o dopo p."""
+    out = {}
+    for i, (a, tt, o) in enumerate(ops):
+        if tt != t:
+            continue
+        s0, x0, e = out.get(o, (i, None, i))
+        if a == "w" and x0 is None:
+            x0 = i
+        out[o] = (s0, x0, max(e, i))
+    return {o: (min(s0, p), None if x0 is None else min(x0, p), max(e, p)) for o, (s0, x0, e) in out.items()}
+
+
+def lock_2pl(ops):
+    """Ricerca esatta di un'assegnazione lock/unlock a due fasi (lock anticipabili, come nelle
+    slide: il controesempio 'r1(x) w1(x) r2(x) w2(x) r3(y) w1(y)' contiene r3(y) proprio perche'
+    T1 non possa prendere y in anticipo). Ritorna {T: lock point} oppure None.
+    ponytail: forza bruta sui lock point (n+1)^T, ok per esami (3-5 transazioni, ~12 azioni)."""
+    from itertools import product
+    if not is_csr(ops):
+        return None
+    ts = sorted(transactions(ops))
+    pos = {t: [i for i, op in enumerate(ops) if op[1] == t] for t in ts}
+    # lock point tra due azioni; +t/1000 rende distinti gli istanti di transazioni diverse
+    scelte = [[k + 0.5 + t / 1000 for k in range(pos[t][0] - 1, pos[t][-1] + 1)] for t in ts]
+    for pts in product(*scelte):
+        iv = {t: _intervalli(ops, t, p) for t, p in zip(ts, pts)}
+        ok = True
+        for a in ts:
+            for b in ts:
+                if a >= b:
+                    continue
+                for o in iv[a].keys() & iv[b].keys():
+                    sa, xa, ea = iv[a][o]
+                    sb, xb, eb = iv[b][o]
+                    # conflitto se si sovrappongono e almeno uno dei due tiene X nel tratto comune
+                    if xa is not None and xa < eb and sb < ea or xb is not None and xb < ea and sa < eb:
+                        ok = False
+                        break
+                if not ok: break
+            if not ok: break
+        if ok:
+            return dict(zip(ts, pts))
+    return None
+
+
+def sequenza_lock(ops, lp):
+    """schedule con sl/xl/u inseriti (testimone 2PL): sl=lock condiviso, xl=esclusivo, u=unlock."""
+    ev = []
+    for i, op in enumerate(ops):
+        ev.append((i, fmt_op(op)))
+    for t, p in lp.items():
+        for o, (s0, x0, e) in _intervalli(ops, t, p).items():
+            if x0 is None or s0 < x0:
+                ev.append((s0 - 0.01 if s0 == int(s0) else s0, f"sl{t}({o})"))
+            if x0 is not None:
+                ev.append((x0 - 0.01 if x0 == int(x0) else x0, f"xl{t}({o})"))
+            ev.append((e + 0.01 if e == int(e) else e + 0.0001, f"u{t}({o})"))
+    return ", ".join(x for _, x in sorted(ev))
+
+
 def perche_non_2pl(ops):
     """None se 2PL, altrimenti il motivo (per 'giustificare la risposta')."""
     if not is_csr(ops):
         return "S non è CSR e ogni schedule 2PL è CSR (2PL è contenuto in CSR)"
+    if lock_2pl(ops) is not None:
+        return None
     first_use, lock_point = {}, {}
     for idx, (a, t, o) in enumerate(ops):
         first_use.setdefault((t, o), idx)
@@ -206,39 +270,14 @@ def perche_non_2pl(ops):
             a2, t2, o2 = ops[j]
             if t1 != t2 and o1 == o2 and "w" in (a1, a2) and lock_point[t1] > j:
                 return (f"T{t1} deve rilasciare il lock su {o1} prima di {fmt_op(ops[j])}, "
-                        f"ma deve ancora acquisire un lock dopo ({fmt_op(ops[lock_point[t1]])}): "
+                        f"ma deve ancora acquisire un lock dopo ({fmt_op(ops[lock_point[t1]])}) "
+                        f"e non puo' prenderlo in anticipo senza bloccare un'altra transazione: "
                         f"violata la regola delle due fasi")
-    return None
+    return "nessuna assegnazione di lock a due fasi e' compatibile con S"
 
 
 def is_2pl(ops):
-    """Test 2PL insegnato nel corso: simula lock a due fasi 'piu' pigri possibile'.
-    Ogni transazione: acquisisce il lock su un oggetto alla prima azione che lo usa,
-    puo' rilasciare solo dopo l'ultima acquisizione (fase di rilascio). Lo schedule e'
-    2PL se esiste un'esecuzione compatibile: qui usiamo il criterio necessario e
-    sufficiente operativo: per ogni arco di conflitto T_i->T_j sullo stesso oggetto,
-    serve che T_i rilasci prima che T_j acquisisca; incrociando tutti i vincoli, lo
-    schedule e' 2PL sse il grafo 'lock-point' e' consistente. Implementazione:
-    lock point L(T) = posizione dell'ultima PRIMA-azione-su-oggetto di T; per ogni
-    conflitto (op_i di T_i, op_j di T_j) con i<j serve L(T_i) < posizione(op_j)."""
-    if not is_csr(ops):
-        return False
-    # prima azione di T su ciascun oggetto = momento in cui T DEVE avere il lock
-    first_use = {}
-    for idx, (a, t, o) in enumerate(ops):
-        first_use.setdefault((t, o), idx)
-    # lock point di T = max sulle prime-azioni (ultimo lock che T acquisisce)
-    lock_point = {}
-    for (t, o), idx in first_use.items():
-        lock_point[t] = max(lock_point.get(t, -1), idx)
-    # vincolo: per ogni conflitto op_i (T_i) < op_j (T_j), T_i deve aver GIA' superato
-    # il suo lock point (cioe' essere in fase di rilascio) prima di op_j
-    pos = {id(op): i for i, op in enumerate(ops)}
-    for i in range(len(ops)):
-        for j in range(i + 1, len(ops)):
-            a1, t1, o1 = ops[i]
-            a2, t2, o2 = ops[j]
-            if t1 != t2 and o1 == o2 and ("w" in (a1, a2)):
-                if lock_point[t1] > j:
-                    return False
-    return True
+    """2PL sse esiste un'assegnazione di lock/unlock a due fasi compatibile con S (lock
+    anticipabili). Prima (fino al 30/09/2026) il test era 'lock al primo uso', che dava falsi
+    NO quando una transazione puo' prendere un lock in anticipo (es. r1(x), w2(x), r1(y))."""
+    return lock_2pl(ops) is not None

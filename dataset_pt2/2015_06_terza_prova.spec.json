@@ -1,0 +1,45 @@
+{
+ "titolo": "Basi di Dati - Prova intermedia del giugno 2015",
+ "sottotitolo": "Esecuzione concorrente / B+-tree (Ottimizzazione a 3 tabelle non gestita da pt2_costo)",
+ "esercizi": [
+  {
+   "tipo": "schedule",
+   "id": "e",
+   "titolo": "Esecuzione concorrente",
+   "punti": 5,
+   "schedule": "r0(t), r2(z), r3(z), w1(z), r3(x), r2(x), w3(x), w3(y), w2(y), w0(y), w1(t)"
+  },
+  {
+   "tipo": "btree",
+   "id": "g",
+   "titolo": "B$^+$-tree (fan-out 4)",
+   "punti": 5,
+   "fanout": 4,
+   "foglie": [
+    [
+     "B",
+     "E",
+     "G"
+    ],
+    [
+     "L",
+     "N"
+    ],
+    [
+     "T",
+     "Z"
+    ]
+   ],
+   "operazioni": [
+    {
+     "op": "delete",
+     "key": "L"
+    },
+    {
+     "op": "insert",
+     "key": "D"
+    }
+   ]
+  }
+ ]
+}

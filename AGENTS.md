@@ -319,6 +319,25 @@ Velocita misurata 30/09: spec->PDF 1.8s, controlli teoria+SQL 0.5s. Il collo di 
   NB: `passaggi_check` va fatto sulla versione normale (nel PDF a quadretti pdftotext legge "P a s s o").
 - Combinabili: es. `--minimal --quadretti --colori`, `--minimal --verticale --colori`.
 
+## ALL'ESAME NON SI TOCCANO I MOTORI  [30/09/2026]
+Test con 2 agenti autonomi: entrambi, invece di risolvere, hanno riscritto `checker/pt2_*.py`.
+All'esame: NON modificare nessun file in `checker/`. Se un risultato del motore ti sembra sbagliato:
+1. rifai il calcolo A MANO seguendo le slide (`riferimenti_teoria/slide/`, cerca con `teoria.cerca_slide`);
+2. nel PDF scrivi il TUO risultato con i passaggi, e una riga "il solver dava X, corretto perche' ...";
+3. annota il dubbio (file NOTE.md) per correggere il motore DOPO, con test.
+Il motore si corregge solo fuori dall'esame, con un test che fallisce prima e passa dopo, e con
+`python checker/test_pt2_proprieta.py` (migliaia di casi casuali contro la teoria) verde.
+
+## Errori dei motori trovati il 30/09 (tutti corretti, con test)
+- 2PL: il vecchio test "lock alla prima azione" sbagliava il 7,7% degli schedule casuali (78 falsi NO,
+  37 falsi SI su 1500). Slide 8 pag.9: conta solo "dopo un rilascio nessuna acquisizione"; i lock si
+  possono prendere IN ANTICIPO (pag.14: r3(y) serve proprio a impedirlo). Ora ricerca esatta + testimone.
+- Costo: selezione dell'ESTERNA salvata su disco -> il JOIN la RILEGGE (termine NP(R) della formula NLJ;
+  il prof scrive "0 +" solo quando e' "mantenuta nel buffer"). 08/06/2023 A: 310.180 / 4.680.
+- Ripresa: CK() vuoto metteva '' in UNDO.
+- Lezione: gli esempi ufficiali NON bastano come test (non distinguevano le due letture del 2PL).
+  Serve `test_pt2_proprieta.py`: teoremi delle slide + controllori indipendenti su casi casuali.
+
 ## Sfida ai materiali del prof - `checker/audit_prof.py`  [30/09/2026]
 Il prof SBAGLIA (12 errori dimostrati su 15 controlli: refusi ripresa, aritmetica ottimizzazione 1, stima
 `<>` ottimizzazione 2, XML non ben formato, SQL lab 16/09 con colonne inesistenti). Quindi: se il nostro

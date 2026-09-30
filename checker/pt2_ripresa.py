@@ -20,7 +20,7 @@ def parse_log(s):
     out = []
     for m in re.finditer(r"(B|C|A|CK|U|I|D)\s*\(([^)]*)\)", s):
         kind = m.group(1)
-        args = [a.strip() for a in m.group(2).split(",")]
+        args = [a.strip() for a in m.group(2).split(",") if a.strip()]   # CK() vuoto: nessuna transazione ('' finiva in UNDO)
         out.append((kind, args))
     return out
 
