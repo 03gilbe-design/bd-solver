@@ -319,6 +319,21 @@ Velocita misurata 30/09: spec->PDF 1.8s, controlli teoria+SQL 0.5s. Il collo di 
   NB: `passaggi_check` va fatto sulla versione normale (nel PDF a quadretti pdftotext legge "P a s s o").
 - Combinabili: es. `--minimal --quadretti --colori`, `--minimal --verticale --colori`.
 
+## CATENA DI CONTROLLO ALL'ESAME (foto -> spec -> PDF)  [30/09/2026]
+Ogni anello ha il suo controllo. Non consegnare finche' non sono tutti verdi.
+1. TRASCRIZIONE (anello piu' fragile, errore reale del 14/09: "<> 'Lombardia'" trattato come "="):
+   - scrivi lo spec DUE volte in modo indipendente (o fallo scrivere a un secondo agente) e confronta:
+     `python checker/controllo_trascrizione.py specA.json specB.json` -> "COINCIDONO";
+   - se hai il testo (pdftotext o trascrizione della foto): `python checker/controllo_trascrizione.py spec.json testo.txt`
+     (log/schedule identici, numeri presenti, "<>" -> selezione_diverso, "salvato in N pagine").
+   - `--colori` nel PDF: rileggi l'estratto colorato contro la foto.
+2. MOTORI: `python checker/test_*.py` tutti verdi (incl. `test_pt2_proprieta.py`).
+3. SQL: sintassi/pattern con `sql_check.py`, poi PROVA VERA: scrivi una seconda query INDIPENDENTE (altra
+   tecnica: NOT IN vs NOT EXISTS, MAX vs >= ALL/HAVING) e `python checker/sql_prova.py "schema" q1.sql q2.sql`
+   -> "UGUALI su 400 database casuali". Se DIVERSE: il controesempio dice quale sbaglia.
+4. TEORIA: `teoria.py` (punti, lunghezza, anti-copia; domanda mai vista -> pagine delle slide).
+5. PDF: `passaggi_check.py` (versione normale) e `pdf_qa.py`, poi rileggi le pagine.
+
 ## ALL'ESAME NON SI TOCCANO I MOTORI  [30/09/2026]
 Test con 2 agenti autonomi: entrambi, invece di risolvere, hanno riscritto `checker/pt2_*.py`.
 All'esame: NON modificare nessun file in `checker/`. Se un risultato del motore ti sembra sbagliato:
